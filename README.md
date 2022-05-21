@@ -1,6 +1,6 @@
 # Grape Drive | Getting Started 
 
-- This is the Grape Drive!
+- This is Grape Drive!
 
 References:
 - SHDW
