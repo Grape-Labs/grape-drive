@@ -1,7 +1,6 @@
-import React, { FC, ReactNode, useCallback, useMemo, Suspense } from 'react';
-import { styled, ThemeProvider } from '@mui/material/styles';
-import { HashRouter, BrowserRouter as Router, Route, Routes } from "react-router-dom";
-//import { LogView } from "./Log/Log";
+import React, { useMemo, Suspense } from 'react';
+import { ThemeProvider } from '@mui/material/styles';
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { DriveView } from "./Drive/Drive";
 import CssBaseline from '@mui/material/CssBaseline';
 
@@ -16,16 +15,11 @@ import {
 
 import Header from './Header/Header';
 import { SnackbarProvider } from 'notistack';
-import { useConnection, ConnectionProvider, WalletProvider, useWallet } from '@solana/wallet-adapter-react';
-import { WalletAdapterNetwork, WalletError, WalletNotConnectedError } from '@solana/wallet-adapter-base';
-import { Connection, Keypair, SystemProgram, Transaction, clusterApiUrl } from '@solana/web3.js';
+import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react';
+import { WalletAdapterNetwork } from '@solana/wallet-adapter-base';
 import { Helmet } from 'react-helmet';
 
-import { useSnackbar } from 'notistack';
-
 import { useTranslation } from 'react-i18next';
-
-//import { WalletDialogProvider, WalletDisconnectButton, WalletMultiButton } from '../WalletAdapterMui';
 
 import {
   //LedgerWalletAdapter,
@@ -45,19 +39,6 @@ import {
   BitpieWalletAdapter,
   SafePalWalletAdapter,
 } from '@solana/wallet-adapter-wallets';
-
-
-/*
-import {
-    getLedgerWallet,
-    getPhantomWallet,
-    getSlopeWallet,
-    getSolflareWallet,
-    getSolletExtensionWallet,
-    getSolletWallet,
-    //getTorusWallet,
-  } from '@solana/wallet-adapter-wallets';
-*/
 
 //import { mainListItems, secondaryListItems } from './components/SidebarList/SidebarList';
 import grapeTheme from  './utils/config/theme'
@@ -92,18 +73,7 @@ function DashboardContent() {
   //const endpoint =  GRAPE_RPC_ENDPOINT;
   const endpoint =  TX_RPC_ENDPOINT;
   const wallets = useMemo(() => [
-  /*
-    getPhantomWallet(),
-    getSolflareWallet(),
-    getSlopeWallet(),
-    getSolletWallet({ network }),
-    getSolletExtensionWallet({ network }),
-    getLedgerWallet(),
-  
-    //getTorusWallet({
-    //  options: { clientId: 'BCX2hQWDez2_qJhmSuQC7DXD4OG0VfGEFjCZfLar2EA5NvKyudCxOOlOcQ4YZbPGQhdwLonSXZr3i_siIJVhtwI' }
-    //}),
-  */  
+
     new PhantomWalletAdapter(),
     new GlowWalletAdapter(),
     new SolflareWalletAdapter(),
@@ -122,17 +92,6 @@ function DashboardContent() {
     new SafePalWalletAdapter(),
   ], [network]);
   
-  /*
-  const { enqueueSnackbar } = useSnackbar();
-  const onError = useCallback(
-      (error) => {
-          enqueueSnackbar(error.message ? `${error.name}: ${error.message}` : error.name, { variant: 'error' });
-          console.error(error);
-      },
-      [enqueueSnackbar]
-  );
-  */
-
   return (
     <>
       <Suspense fallback="loading">
@@ -143,7 +102,6 @@ function DashboardContent() {
                       <WalletProvider wallets={wallets} autoConnect>
                       
                       <Grid 
-                          //color={grapeTheme.palette.primary.light}
                           sx={{ 
                             flex: 1
                           }}>
