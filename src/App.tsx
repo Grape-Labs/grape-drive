@@ -23,12 +23,9 @@ import { Helmet } from 'react-helmet';
 
 import { useSnackbar } from 'notistack';
 
-import ConfirmDialog from './components/ConfirmDialog/ConfirmDialog';
-
 import { useTranslation } from 'react-i18next';
 
 //import { WalletDialogProvider, WalletDisconnectButton, WalletMultiButton } from '../WalletAdapterMui';
-
 
 import {
   //LedgerWalletAdapter,
@@ -168,43 +165,10 @@ function DashboardContent() {
                               }}
                               >
                               <Container maxWidth="xl" sx={{ mb: 4 }}>
-                                  <ConfirmDialog />
                                   <Routes>
 
-                                    <Route path="/splash" element={<SplashView/>} />
-
-                                    <Route path="/featured" element={<FeaturedView/>} />
+                                    <Route path="/" element={<DriveView/>} />
                                     
-                                    <Route path="/messages" element={<MessagesView/>} />
-                                    {/*
-                                    <Route path="/drive" element={<DriveView/>} />
-                                    */}
-                                    <Route path="/leaderboard" element={<LeaderboardView/>} />
-                                    
-                                    <Route path="/" element={<ProfileView/>}>
-                                      <Route path=":handlekey" element={<ProfileView />} />
-                                    </Route>
-                                    <Route index element={<ProfileView/>} />
-                                    
-                                    <Route path="store/*" element={<StoreFrontView />} >
-                                        <Route path=":handlekey" element={<StoreFrontView />} />
-                                    </Route>
-                                    <Route path="collection/*" element={<StoreFrontView />} >
-                                        <Route path=":handlekey" element={<StoreFrontView />} />
-                                    </Route>
-
-                                    <Route path="profile/*" element={<ProfileView />} >
-                                        <Route path=":handlekey" element={<ProfileView />} />
-                                    </Route>
-                                    
-                                    <Route path="preview/*" element={<PreviewView />}>
-                                        <Route path=":handlekey" element={<PreviewView />} />
-                                    </Route>
-
-                                    <Route path="identity/*" element={<IdentityView />}>
-                                        <Route path=":handlekey" element={<IdentityView />} />
-                                    </Route>
-
                                     <Route path="*" element={<NotFound />} />
                                   </Routes>
                                   
