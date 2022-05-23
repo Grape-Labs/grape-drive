@@ -146,8 +146,8 @@ export function DriveView(props: any){
             await connection.confirmTransaction(signedTransaction.txid, 'processed');
             closeSnackbar(cnfrmkey);
             const snackaction = (key:any) => (
-                <Button href={`https://explorer.solana.com/tx/${signedTransaction.txid}`} target='_blank'  sx={{color:'white'}}>
-                    {signedTransaction.txid}
+                <Button href={`https://explorer.solana.com/tx/${signedTransaction?.txid}`} target='_blank'  sx={{color:'white'}}>
+                    {signedTransaction?.txid}
                 </Button>
             );
             enqueueSnackbar(`Transaction Confirmed`,{ variant: 'success', action:snackaction });
@@ -227,6 +227,34 @@ export function DriveView(props: any){
             const cnfrmkey = enqueueSnackbar(`Confirming transaction`,{ variant: 'info', action:snackprogress, persist: true });
             //console.log(storagePublicKey + "/"+storageAccount+" - file: "+file);
             const signedTransaction = await thisDrive.deleteFile(storagePublicKey, 'https://shdw-drive.genesysgo.net/'+storagePublicKey.toBase58()+'/'+file);
+            await connection.confirmTransaction(signedTransaction.txid, 'processed');
+            closeSnackbar(cnfrmkey);
+            const snackaction = (key:any) => (
+                <Button href={`https://explorer.solana.com/tx/${signedTransaction.txid}`} target='_blank'  sx={{color:'white'}}>
+                    {signedTransaction.txid}
+                </Button>
+            );
+            enqueueSnackbar(`Transaction Confirmed`,{ variant: 'success', action:snackaction });
+            setTimeout(function() {
+                fetchStorageAccounts();
+            }, 2000);
+            
+        }catch(e){
+            closeSnackbar();
+            enqueueSnackbar(`${e}`,{ variant: 'error' });
+            console.log("Error: "+e);
+            //console.log("Error: "+JSON.stringify(e));
+        } 
+    }
+
+    const resizeStoragePool = async (storagePublicKey: PublicKey, size: string) => { 
+        try{
+            enqueueSnackbar(`Preparing to delete storage ${storagePublicKey.toString()}`,{ variant: 'info' });
+            const snackprogress = (key:any) => (
+                <CircularProgress sx={{padding:'10px'}} />
+            );
+            const cnfrmkey = enqueueSnackbar(`Confirming transaction`,{ variant: 'info', action:snackprogress, persist: true });
+            const signedTransaction = await thisDrive.resizeStoragePool(storagePublicKey);
             await connection.confirmTransaction(signedTransaction.txid, 'processed');
             closeSnackbar(cnfrmkey);
             const snackaction = (key:any) => (
@@ -405,6 +433,135 @@ export function DriveView(props: any){
                             
                     </Box>
                 </Grid>
+                <BootstrapDialog 
+                    maxWidth={"lg"}
+                    open={open} onClose={handleClose}
+                    PaperProps={{
+                        style: {
+                            background: '#13151C',
+                            border: '1px solid rgba(255,255,255,0.05)',
+                            borderTop: '1px solid rgba(255,255,255,0.1)',
+                            borderRadius: '20px'
+                        }
+                        }}
+                    >
+                    <DialogTitle>
+                    {t('Create new storage pool')}
+                    </DialogTitle>
+                    <form onSubmit={HandleAllocateNewStoragePool}>
+                        <DialogContent>
+                            <FormControl fullWidth>
+                                <TextField
+                                    autoFocus
+                                    autoComplete='off'
+                                    margin="dense"
+                                    id=""
+                                    label={t('Label')}
+                                    type="text"
+                                    fullWidth
+                                    variant="standard"
+                                    value={storageLabel}
+                                    onChange={(e: any) => {
+                                        setStorageLabel(e.target.value)
+                                    }}
+                                />
+                                Label
+                            </FormControl>
+
+                            <FormControl sx={{ m: 1, minWidth: 120 }}>
+                                <TextField
+                                    autoFocus
+                                    autoComplete='off'
+                                    margin="dense"
+                                    id=""
+                                    label={t('Set your storage size')}
+                                    type="number"
+                                    variant="standard"
+                                    value={storageSize}
+                                    onChange={(e: any) => {
+                                    setStorageSize(e.target.value)
+                                    }}
+                                />
+                                Allocation
+                            </FormControl>
+
+                            <FormControl sx={{ m: 1, minWidth: 120 }}>
+                                <InputLabel id="demo-simple-select-label">Units</InputLabel>
+                                <Select
+                                    labelId="demo-simple-select-label"
+                                    id="demo-simple-select"
+                                    value={storageSizeUnits}
+                                    label="units"
+                                    onChange={handleStorageSizeUnitsChange}
+                                    >
+                                    <MenuItem value={'KB'}>KB</MenuItem>
+                                    <MenuItem value={'MB'}>MB</MenuItem>
+                                    <MenuItem value={'GB'}>GB</MenuItem>
+                                </Select>
+                            </FormControl>
+                            
+                        </DialogContent> 
+                        <DialogActions>
+                            <Button onClick={handleCloseDialog}>Cancel</Button>
+                            <Button 
+                                type="submit"
+                                variant="text" 
+                                //disabled={((+offer_amount > sol_balance) || (+offer_amount < 0.001) || (+offer_amount < props.highestOffer))}
+                                title="Create">
+                                    Create
+                            </Button>
+                        </DialogActions> 
+                    </form>
+                </BootstrapDialog>
+            </>
+            
+        ); 
+    }
+
+    function ResizeStoragePool(props:any){
+        const { t, i18n } = useTranslation();
+        //const storageAccount = props.storageAccount;
+        const [storageSize, setStorageSize] = React.useState(1);
+        const [storageSizeUnits, setStorageSizeUnits] = React.useState('MB');
+        const [storageLabel, setStorageLabel] = React.useState('My Storage');
+        const [open_snackbar, setSnackbarState] = React.useState(false);
+        const { enqueueSnackbar } = useSnackbar();
+        const { publicKey, wallet } = useWallet();
+    
+        const [open, setOpen] = React.useState(false);
+    
+        const handleCloseDialog = () => {
+            setOpen(false);
+        }
+    
+        const handleClickOpen = () => {
+            setOpen(true);
+        };
+    
+        const handleClose = () => {
+            setOpen(false);
+        };
+
+        const HandleAllocateNewStoragePool = (event: any) => {
+            event.preventDefault();
+            if (thisDrive && storageLabel && storageSizeUnits && storageSize){
+                setOpen(false);
+                createStoragePool(storageLabel, storageSize+storageSizeUnits);
+            }
+        };
+
+        const handleStorageSizeUnitsChange = (event: SelectChangeEvent) => {
+            setStorageSizeUnits(event.target.value as string);
+          };
+    
+        return (
+            <>
+                <Button 
+                    onClick={handleClickOpen} 
+                    sx={{borderRadius:'17px'}}
+                >
+                    <StorageIcon sx={{mr:1}} /> Resize
+                </Button>
                 <BootstrapDialog 
                     maxWidth={"lg"}
                     open={open} onClose={handleClose}
@@ -742,9 +899,7 @@ export function DriveView(props: any){
                             >   
                                 <ButtonGroup variant="outlined" aria-label="outlined primary button group">
                                     {!storageAccount.account.toBeDeleted &&
-                                        <Button sx={{borderRadius:'17px'}} disabled>
-                                            <StorageIcon sx={{mr:1}} /> Resize
-                                        </Button>
+                                        <ResizeStoragePool />
                                     }
                                     {console.log(JSON.stringify(storageAccount))}
                                     {!storageAccount.account.immutable && !storageAccount.account.toBeDeleted ?
