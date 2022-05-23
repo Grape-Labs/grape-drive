@@ -395,8 +395,7 @@ export function DriveView(props: any){
                         justifyContent='flex-end'
                         alignItems='center'
                     >
-                        <Tooltip title={t('Create new storage pool')}>
-
+                        
                             <Button 
                                 variant="outlined" 
                                 onClick={handleClickOpen} 
@@ -404,7 +403,6 @@ export function DriveView(props: any){
                                 <AddCircleIcon sx={{mr:1}} /> Storage
                             </Button>
                             
-                        </Tooltip>
                     </Box>
                 </Grid>
                 <BootstrapDialog 
@@ -684,11 +682,9 @@ export function DriveView(props: any){
                         <Typography variant="h6">
                             {`${storageAccount.account.identifier}`} 
                             {storageAccount.account.toBeDeleted &&
-                                <Tooltip title="Pending to be deleted">
                                     <Button sx={{borderRadius:'17px'}}>
                                         <WarningIcon color="error" />
                                     </Button>
-                                </Tooltip>
                             }
                         </Typography>
                         
