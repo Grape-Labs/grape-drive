@@ -753,7 +753,7 @@ export function DriveView(props: any){
                                     {console.log(JSON.stringify(storageAccount))}
                                     {!storageAccount.account.immutable && !storageAccount.account.toBeDeleted ?
                                         <Tooltip title="Make Immutable">
-                                            <Button onClick={HandleLockStoragePool}  sx={{borderRadius:'17px'}}>
+                                            <Button  sx={{borderRadius:'17px'}}>
                                                 <LockOpenIcon sx={{mr:1}} /> Lock
                                             </Button>
                                         </Tooltip>
