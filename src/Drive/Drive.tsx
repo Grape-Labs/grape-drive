@@ -549,6 +549,19 @@ export function DriveView(props: any){
 
     }
 
+    function RenderStorage(props: any){
+        const account = props.account;
+
+        return (
+            <>
+            {account.map((storageAccount: any, key: number) => (
+                <RenderStorageRow storageAccount={storageAccount} key={key}/>
+            ))}
+
+            </>
+        );
+    }
+
     function RenderStorageRow(props: any){
         const storageAccount = props.storageAccount;
         const [uploadFiles, setUploadFiles] = React.useState(null);
@@ -828,7 +841,7 @@ export function DriveView(props: any){
                     >
                         
                         <Grid 
-                            item xs={12}
+                            item sm={12}
                             alignItems="center"
                         >
 
@@ -861,9 +874,7 @@ export function DriveView(props: any){
                                         
                                         </>
                                     }>
-                                    {account.map((storageAccount: any, key: number) => (
-                                        <RenderStorageRow storageAccount={storageAccount} key={key}/>
-                                    ))}
+                                    <RenderStorage account={account} />
                                 </List>
                             :
                                 <>
