@@ -59,6 +59,7 @@ import { SelectChangeEvent } from '@mui/material/Select';
 
 import GrapeIcon from "../components/static/GrapeIcon";
 import SolanaIcon from "../components/static/SolIcon";
+import SolCurrencyIcon from '../components/static/SolCurrencyIcon';
 
 import SaveIcon from '@mui/icons-material/Save';
 import LocalFireDepartmentIcon from '@mui/icons-material/LocalFireDepartment';
@@ -260,7 +261,7 @@ export function DriveView(props: any){
             const cnfrmkey = enqueueSnackbar(`Confirming transaction`,{ variant: 'info', action:snackprogress, persist: true });
             
             const signedTransaction = await thisDrive.addStorage(storagePublicKey, size);
-            await connection.confirmTransaction(signedTransaction.txid, 'processed');
+            await connection.confirmTransaction(signedTransaction.txid, 'confirmed');
             closeSnackbar(cnfrmkey);
             const snackaction = (key:any) => (
                 <Button href={`https://explorer.solana.com/tx/${signedTransaction.txid}`} target='_blank'  sx={{color:'white'}}>
@@ -748,7 +749,9 @@ export function DriveView(props: any){
 
         return (
             <>
-            {account.map((storageAccount: any, key: number) => (
+            {account
+            .sort((a:any, b:any) => a.account.creationTime < b.account.creationTime ? 1 : -1)
+            .map((storageAccount: any, key: number) => (
                 <RenderStorageRow storageAccount={storageAccount} key={key}/>
             ))}
 
@@ -766,7 +769,7 @@ export function DriveView(props: any){
 
         const getStorageFiles = async (storagePublicKey: PublicKey) => { 
             const asa = await thisDrive.getStorageAccount(storagePublicKey);
-
+            
             const accountInfo = await ggoconnection.getAccountInfo(storagePublicKey);
             console.log("accountInfo: "+JSON.stringify(accountInfo));
             //.getMultipleAccountsInfo(storagePublicKey);
@@ -974,22 +977,14 @@ export function DriveView(props: any){
                                 sx={{background:'#000'}}
                             >
                                 <Grid container>
-                                    <Grid item xs={12}>    
-                                        <Typography variant="caption">
-                                            Storage Cost: {(storageAccount.account.totalCostOfCurrentStorage/LAMPORTS_PER_SOL)}
-                                        </Typography>
+                                    <Grid item xs={12} sx={{p:0}}>    
+                                            Storage Cost: {(storageAccount.account.totalCostOfCurrentStorage/LAMPORTS_PER_SOL)}<SolCurrencyIcon sx={{fontSize:"9px"}}  />
                                     </Grid>
-                                </Grid>
-                                <Grid container>
-                                    <Grid item xs={6}>  
-                                        <Typography variant="caption">
+                                    <Grid item xs={6} sx={{p:0}}>  
                                             Creation: {(storageAccount.account.creationEpoch)}
-                                        </Typography>
                                     </Grid>
-                                    <Grid item xs={6} alignItems="right">    
-                                        <Typography variant="caption">
+                                    <Grid item xs={6}  sx={{p:0}} alignItems="right">    
                                             Last Fee: {(storageAccount.account.lastFeeEpoch)}
-                                        </Typography>
                                     </Grid>
                                 </Grid>
                             </Paper>
