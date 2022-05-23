@@ -889,7 +889,7 @@ export function DriveView(props: any){
                                 </del>
                             :
                                 <>
-                                
+                                    {`${storageAccount.account.identifier}`} 
                                 </>
                             }
                         </Typography>
