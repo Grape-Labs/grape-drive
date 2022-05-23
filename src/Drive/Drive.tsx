@@ -81,7 +81,7 @@ import TextSnippetIcon from '@mui/icons-material/TextSnippet';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import CloudCircleIcon from '@mui/icons-material/CloudCircle';
-import { StorageTwoTone } from "@mui/icons-material";
+import { StorageTwoTone, StrikethroughS } from "@mui/icons-material";
 
 const Input = styled('input')({
     display: 'none',
@@ -769,7 +769,7 @@ export function DriveView(props: any){
 
         const getStorageFiles = async (storagePublicKey: PublicKey) => { 
             const asa = await thisDrive.getStorageAccount(storagePublicKey);
-            
+
             const accountInfo = await ggoconnection.getAccountInfo(storagePublicKey);
             console.log("accountInfo: "+JSON.stringify(accountInfo));
             //.getMultipleAccountsInfo(storagePublicKey);
@@ -879,11 +879,18 @@ export function DriveView(props: any){
                     </ListItemAvatar>
                     <ListItemText>
                         <Typography variant="h6">
-                            {`${storageAccount.account.identifier}`} 
-                            {storageAccount.account.toBeDeleted &&
+                            
+                            {storageAccount.account.toBeDeleted ?
+                                <del>
+                                    {`${storageAccount.account.identifier}`} 
                                     <Button sx={{borderRadius:'17px'}}>
                                         <WarningIcon color="error" />
                                     </Button>
+                                </del>
+                            :
+                                <>
+                                
+                                </>
                             }
                         </Typography>
                         
@@ -977,13 +984,13 @@ export function DriveView(props: any){
                                 sx={{background:'#000'}}
                             >
                                 <Grid container>
-                                    <Grid item xs={12} sx={{p:0}}>    
+                                    <Grid item xs={12} sx={{p:0,m:0}}>    
                                             Storage Cost: {(storageAccount.account.totalCostOfCurrentStorage/LAMPORTS_PER_SOL)}<SolCurrencyIcon sx={{fontSize:"9px"}}  />
                                     </Grid>
-                                    <Grid item xs={6} sx={{p:0}}>  
+                                    <Grid item xs={6} sx={{p:0,m:0}}>  
                                             Creation: {(storageAccount.account.creationEpoch)}
                                     </Grid>
-                                    <Grid item xs={6}  sx={{p:0}} alignItems="right">    
+                                    <Grid item xs={6}  sx={{p:0,m:0}} alignItems="right">    
                                             Last Fee: {(storageAccount.account.lastFeeEpoch)}
                                     </Grid>
                                 </Grid>
