@@ -247,14 +247,42 @@ export function DriveView(props: any){
         } 
     }
 
-    const resizeStoragePool = async (storagePublicKey: PublicKey, size: string) => { 
+    const resizeAddStoragePool = async (storagePublicKey: PublicKey, size: string) => { 
         try{
-            enqueueSnackbar(`Preparing to delete storage ${storagePublicKey.toString()}`,{ variant: 'info' });
+            enqueueSnackbar(`Preparing to resize/add storage ${storagePublicKey.toString()}`,{ variant: 'info' });
             const snackprogress = (key:any) => (
                 <CircularProgress sx={{padding:'10px'}} />
             );
             const cnfrmkey = enqueueSnackbar(`Confirming transaction`,{ variant: 'info', action:snackprogress, persist: true });
-            const signedTransaction = await thisDrive.resizeStoragePool(storagePublicKey);
+            const signedTransaction = await thisDrive.addStorage(storagePublicKey, size);
+            await connection.confirmTransaction(signedTransaction.txid, 'processed');
+            closeSnackbar(cnfrmkey);
+            const snackaction = (key:any) => (
+                <Button href={`https://explorer.solana.com/tx/${signedTransaction.txid}`} target='_blank'  sx={{color:'white'}}>
+                    {signedTransaction.txid}
+                </Button>
+            );
+            enqueueSnackbar(`Transaction Confirmed`,{ variant: 'success', action:snackaction });
+            setTimeout(function() {
+                fetchStorageAccounts();
+            }, 2000);
+            
+        }catch(e){
+            closeSnackbar();
+            enqueueSnackbar(`${e}`,{ variant: 'error' });
+            console.log("Error: "+e);
+            //console.log("Error: "+JSON.stringify(e));
+        } 
+    }
+
+    const resizeReduceStoragePool = async (storagePublicKey: PublicKey, size: string) => { 
+        try{
+            enqueueSnackbar(`Preparing to resize/reduce storage ${storagePublicKey.toString()}`,{ variant: 'info' });
+            const snackprogress = (key:any) => (
+                <CircularProgress sx={{padding:'10px'}} />
+            );
+            const cnfrmkey = enqueueSnackbar(`Confirming transaction`,{ variant: 'info', action:snackprogress, persist: true });
+            const signedTransaction = await thisDrive.reduceStorage(storagePublicKey, size);
             await connection.confirmTransaction(signedTransaction.txid, 'processed');
             closeSnackbar(cnfrmkey);
             const snackaction = (key:any) => (
@@ -520,7 +548,7 @@ export function DriveView(props: any){
 
     function ResizeStoragePool(props:any){
         const { t, i18n } = useTranslation();
-        //const storageAccount = props.storageAccount;
+        const storageAccount = props.storageAccount;
         const [storageSize, setStorageSize] = React.useState(1);
         const [storageSizeUnits, setStorageSizeUnits] = React.useState('MB');
         const [storageLabel, setStorageLabel] = React.useState('My Storage');
@@ -542,11 +570,13 @@ export function DriveView(props: any){
             setOpen(false);
         };
 
-        const HandleAllocateNewStoragePool = (event: any) => {
+        const HandleAllocateResizeStoragePool = (event: any) => {
             event.preventDefault();
             if (thisDrive && storageLabel && storageSizeUnits && storageSize){
                 setOpen(false);
-                createStoragePool(storageLabel, storageSize+storageSizeUnits);
+                
+                resizeAddStoragePool(storageAccount, storageSize+storageSizeUnits)
+                //resizeReduceStoragePool(storageSize+storageSizeUnits)
             }
         };
 
@@ -575,28 +605,10 @@ export function DriveView(props: any){
                         }}
                     >
                     <DialogTitle>
-                    {t('Create new storage pool')}
+                        {t('Resize storage pool')}
                     </DialogTitle>
-                    <form onSubmit={HandleAllocateNewStoragePool}>
+                    <form onSubmit={HandleAllocateResizeStoragePool}>
                         <DialogContent>
-                            <FormControl fullWidth>
-                                <TextField
-                                    autoFocus
-                                    autoComplete='off'
-                                    margin="dense"
-                                    id=""
-                                    label={t('Label')}
-                                    type="text"
-                                    fullWidth
-                                    variant="standard"
-                                    value={storageLabel}
-                                    onChange={(e: any) => {
-                                        setStorageLabel(e.target.value)
-                                    }}
-                                />
-                                Label
-                            </FormControl>
-
                             <FormControl sx={{ m: 1, minWidth: 120 }}>
                                 <TextField
                                     autoFocus
@@ -899,7 +911,7 @@ export function DriveView(props: any){
                             >   
                                 <ButtonGroup variant="outlined" aria-label="outlined primary button group">
                                     {!storageAccount.account.toBeDeleted &&
-                                        <ResizeStoragePool />
+                                        <ResizeStoragePool storageAccount={storageAccount} />
                                     }
                                     {console.log(JSON.stringify(storageAccount))}
                                     {!storageAccount.account.immutable && !storageAccount.account.toBeDeleted ?
