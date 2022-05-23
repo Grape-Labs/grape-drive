@@ -44,11 +44,15 @@ import {
     DialogContent,
     TextField,
     FormControl,
+    FormControlLabel,
+    FormLabel,
     Select,
     MenuItem,
     InputLabel,
     Paper,
     Container,
+    Radio,
+    RadioGroup
 } from '@mui/material';
 
 import { SelectChangeEvent } from '@mui/material/Select';
@@ -254,6 +258,7 @@ export function DriveView(props: any){
                 <CircularProgress sx={{padding:'10px'}} />
             );
             const cnfrmkey = enqueueSnackbar(`Confirming transaction`,{ variant: 'info', action:snackprogress, persist: true });
+            
             const signedTransaction = await thisDrive.addStorage(storagePublicKey, size);
             await connection.confirmTransaction(signedTransaction.txid, 'processed');
             closeSnackbar(cnfrmkey);
@@ -555,7 +560,8 @@ export function DriveView(props: any){
         const [open_snackbar, setSnackbarState] = React.useState(false);
         const { enqueueSnackbar } = useSnackbar();
         const { publicKey, wallet } = useWallet();
-    
+        const [add, setAdd] = React.useState("1");
+
         const [open, setOpen] = React.useState(false);
     
         const handleCloseDialog = () => {
@@ -575,14 +581,21 @@ export function DriveView(props: any){
             if (thisDrive && storageLabel && storageSizeUnits && storageSize){
                 setOpen(false);
                 
-                resizeAddStoragePool(storageAccount, storageSize+storageSizeUnits)
-                //resizeReduceStoragePool(storageSize+storageSizeUnits)
+                if (add === "1")
+                    resizeAddStoragePool(new PublicKey(storageAccount.publicKey), storageSize+storageSizeUnits)
+                else
+                    resizeReduceStoragePool(new PublicKey(storageAccount.publicKey), storageSize+storageSizeUnits)
             }
         };
 
         const handleStorageSizeUnitsChange = (event: SelectChangeEvent) => {
             setStorageSizeUnits(event.target.value as string);
           };
+
+        const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+            const val = (event.target as HTMLInputElement).value;
+            setAdd(val);
+        };
     
         return (
             <>
@@ -609,6 +622,20 @@ export function DriveView(props: any){
                     </DialogTitle>
                     <form onSubmit={HandleAllocateResizeStoragePool}>
                         <DialogContent>
+                            <FormControl>
+                                <FormLabel id="demo-radio-buttons-group-label">Resize</FormLabel>
+                                    <RadioGroup
+                                        aria-labelledby="demo-radio-buttons-group-label"
+                                        defaultValue="female"
+                                        name="radio-buttons-group"
+
+                                        value={add}
+                                        onChange={handleChange}
+                                    >
+                                        <FormControlLabel control={<Radio />} label="Add" value="1"/>
+                                        <FormControlLabel control={<Radio />} label="Remove" value="0"/>
+                                </RadioGroup>
+                            </FormControl>
                             <FormControl sx={{ m: 1, minWidth: 120 }}>
                                 <TextField
                                     autoFocus
@@ -649,7 +676,7 @@ export function DriveView(props: any){
                                 variant="text" 
                                 //disabled={((+offer_amount > sol_balance) || (+offer_amount < 0.001) || (+offer_amount < props.highestOffer))}
                                 title="Create">
-                                    Create
+                                    Resize
                             </Button>
                         </DialogActions> 
                     </form>
