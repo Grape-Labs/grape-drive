@@ -1,6 +1,6 @@
 # Grape Drive | Getting Started 
 
-- Using Shadow Drive, we took a small dive to make a UI dubbed Grape Drive
+- Grape Drive, is a quick dive to make a simple UI utilizing Shadow Drive
 
 Pending to be completed
 - Update file
