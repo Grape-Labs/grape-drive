@@ -3,7 +3,7 @@
 - This is Grape Drive!
 
 References:
-- SHDW
+- Shadow Drive by GensysGo (https://github.com/GenesysGo/shadow-drive)
 - Dialect Labs (https://github.com/dialectlabs)
 
 Wallet Adapter:
