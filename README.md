@@ -1,6 +1,6 @@
 # Grape Drive | Getting Started 
 
-- This is Grape Drive!
+- Using Shadow Drive, we took a small dive to make a UI dubbed Grape Drive
 
 References:
 - Shadow Drive by GensysGo (https://github.com/GenesysGo/shadow-drive)
