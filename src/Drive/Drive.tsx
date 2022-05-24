@@ -818,7 +818,7 @@ export function DriveView(props: any){
                 const cnfrmkey = enqueueSnackbar(`Confirming transaction`,{ variant: 'info', action:snackprogress, persist: true });
                 const signedTransaction = await thisDrive.uploadMultipleFiles(storagePublicKey, files);
                 //const signedTransaction = await thisDrive.uploadFile(storagePublicKey, files[0]);
-                await connection.confirmTransaction(signedTransaction.txid, 'processed');
+                await connection.confirmTransaction(signedTransaction.txid, 'max');
                 closeSnackbar(cnfrmkey);
                 console.log("TX: "+JSON.stringify(signedTransaction))
                 const snackaction = (key:any) => (
