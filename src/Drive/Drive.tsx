@@ -61,6 +61,7 @@ import GrapeIcon from "../components/static/GrapeIcon";
 import SolanaIcon from "../components/static/SolIcon";
 import SolCurrencyIcon from '../components/static/SolCurrencyIcon';
 
+import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
 import SaveIcon from '@mui/icons-material/Save';
 import LocalFireDepartmentIcon from '@mui/icons-material/LocalFireDepartment';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
@@ -364,6 +365,64 @@ export function DriveView(props: any){
         } 
     }
 
+    const uploadToStoragePool = async (files: any, storagePublicKey: PublicKey) => { 
+        try{
+            enqueueSnackbar(`Preparing to upload some files to ${storagePublicKey.toString()}`,{ variant: 'info' });
+            const snackprogress = (key:any) => (
+                <CircularProgress sx={{padding:'10px'}} />
+            );
+            const cnfrmkey = enqueueSnackbar(`Confirming transaction`,{ variant: 'info', action:snackprogress, persist: true });
+            const signedTransaction = await thisDrive.uploadMultipleFiles(storagePublicKey, files);
+            //const signedTransaction = await thisDrive.uploadFile(storagePublicKey, files[0]);
+            await connection.confirmTransaction(signedTransaction.txid, 'max');
+            closeSnackbar(cnfrmkey);
+            console.log("TX: "+JSON.stringify(signedTransaction))
+            const snackaction = (key:any) => (
+                <Button href={`https://explorer.solana.com/tx/${signedTransaction.txid}`} target='_blank'  sx={{color:'white'}}>
+                    {signedTransaction.txid}
+                </Button>
+            );
+            enqueueSnackbar(`Transaction Confirmed`,{ variant: 'success', action:snackaction });
+            setTimeout(function() {
+                fetchStorageAccounts();
+            }, 2000);
+        }catch(e){
+            closeSnackbar();
+            enqueueSnackbar(`${JSON.stringify(e)}`,{ variant: 'error' });
+            console.log("Error: "+JSON.stringify(e));
+            //console.log("Error: "+JSON.stringify(e));
+        } 
+    }
+
+    const uploadReplaceToStoragePool = async (newFile: any, existingFileUrl: string, storagePublicKey: PublicKey) => { 
+        try{
+            enqueueSnackbar(`Preparing to upload some files to ${storagePublicKey.toString()}`,{ variant: 'info' });
+            const snackprogress = (key:any) => (
+                <CircularProgress sx={{padding:'10px'}} />
+            );
+            const cnfrmkey = enqueueSnackbar(`Confirming transaction`,{ variant: 'info', action:snackprogress, persist: true });
+            const signedTransaction = await thisDrive.editFile(storagePublicKey, existingFileUrl, newFile);
+            //const signedTransaction = await thisDrive.uploadFile(storagePublicKey, files[0]);
+            await connection.confirmTransaction(signedTransaction.txid, 'max');
+            closeSnackbar(cnfrmkey);
+            console.log("TX: "+JSON.stringify(signedTransaction))
+            const snackaction = (key:any) => (
+                <Button href={`https://explorer.solana.com/tx/${signedTransaction.txid}`} target='_blank'  sx={{color:'white'}}>
+                    {signedTransaction.txid}
+                </Button>
+            );
+            enqueueSnackbar(`Transaction Confirmed`,{ variant: 'success', action:snackaction });
+            setTimeout(function() {
+                fetchStorageAccounts();
+            }, 2000);
+        }catch(e){
+            closeSnackbar();
+            enqueueSnackbar(`${JSON.stringify(e)}`,{ variant: 'error' });
+            console.log("Error: "+JSON.stringify(e));
+            //console.log("Error: "+JSON.stringify(e));
+        } 
+    }
+
     const claimStake = async (storagePublicKey: PublicKey) => { 
         try{
             enqueueSnackbar(`Preparing to claim stake ${storagePublicKey.toString()}`,{ variant: 'info' });
@@ -552,6 +611,83 @@ export function DriveView(props: any){
         ); 
     }
 
+    function ReplaceFileFromStorage(props:any){
+        const { t, i18n } = useTranslation();
+        const storageAccount = props.storageAccount;
+        const storageAccountFile = props.storageAccountFile;
+        const [uploadFile, setUploadFile] = React.useState(null);
+
+        const [open, setOpen] = React.useState(false);
+    
+        const handleCloseDialog = () => {
+            setOpen(false);
+        }
+    
+        const handleClickOpen = () => {
+            setOpen(true);
+        };
+    
+        const handleClose = () => {
+            setOpen(false);
+        };
+
+        const HandleAllocateReplaceFile = (event: any) => {
+            event.preventDefault();
+            //console.log("uploadFile: "+JSON.stringify(uploadFile));
+            //console.log("storageAccountFile: "+storageAccountFile);
+            //console.log("storageAccount: "+storageAccount.publicKey);
+            uploadReplaceToStoragePool(uploadFile, storageAccountFile, new PublicKey(storageAccount.publicKey));
+        };
+    
+        return (
+            <>
+                <Button 
+                    size="small"
+                    onClick={handleClickOpen} 
+                    sx={{borderRadius:'17px'}}
+                    title="Swap"
+                    disabled
+                >
+                    <SwapHorizIcon/>
+                </Button>
+                <BootstrapDialog 
+                    maxWidth={"lg"}
+                    open={open} onClose={handleClose}
+                    PaperProps={{
+                        style: {
+                            background: '#13151C',
+                            border: '1px solid rgba(255,255,255,0.05)',
+                            borderTop: '1px solid rgba(255,255,255,0.1)',
+                            borderRadius: '20px'
+                        }
+                        }}
+                    >
+                    <DialogTitle>
+                        {t('Replace file')}
+                    </DialogTitle>
+                    <form onSubmit={HandleAllocateReplaceFile}>
+                        <DialogContent>
+                            <FormControl>
+                                <FileUpload value={uploadFile} onChange={setUploadFile} />
+                            </FormControl>
+                            
+                        </DialogContent> 
+                        <DialogActions>
+                            <Button onClick={handleCloseDialog}>Cancel</Button>
+                            <Button 
+                                type="submit"
+                                variant="text" 
+                                title="Replace">
+                                    Replace
+                            </Button>
+                        </DialogActions> 
+                    </form>
+                </BootstrapDialog>
+            </>
+            
+        ); 
+    }
+
     function ResizeStoragePool(props:any){
         const { t, i18n } = useTranslation();
         const storageAccount = props.storageAccount;
@@ -690,6 +826,10 @@ export function DriveView(props: any){
     function FileItem(props: any){
         const storageAccount = props.storageAccount;
         const file = props.file;
+        const [uploadFiles, setUploadFiles] = React.useState(null);
+        const key = props.key;
+        const [open, setOpen] = React.useState(false);
+        const [currentFiles, setCurrentFiles] = React.useState(null);
 
         const handleCopyClick = () => {
             enqueueSnackbar(`Copied!`,{ variant: 'success' });
@@ -698,6 +838,10 @@ export function DriveView(props: any){
         const HandleDeleteStoragePoolFile = (event: any) => {
             event.preventDefault();
             deleteStoragePoolFile(new PublicKey(storageAccount.publicKey), file);
+        };
+
+        const handleFileReplacePopup = () => {
+            
         };
 
         return (
@@ -710,8 +854,6 @@ export function DriveView(props: any){
                         <TextSnippetIcon />
                     }
 
-
-                    
                 </ListItemIcon>
                 <ListItemText>
                     {file}
@@ -719,23 +861,25 @@ export function DriveView(props: any){
                         text={`https://shdw-drive.genesysgo.net/${storageAccount.publicKey}/${file}`} 
                         onCopy={handleCopyClick}
                         >
-                        <Button sx={{borderRadius:'24px', color:'white'}}>
-                            <ContentCopyIcon fontSize="small" sx={{color:'white',mr:1}} />
-                            Copy   
+                        <Button sx={{borderRadius:'24px', color:'white'}} title="Copy" size="small">
+                            <ContentCopyIcon />
                         </Button>
                     </CopyToClipboard> 
+
+                    <ReplaceFileFromStorage storageAccount={storageAccount} storageAccountFile={`https://shdw-drive.genesysgo.net/${storageAccount.publicKey}/${file}`} />
 
                     <Button 
                         sx={{borderRadius:'24px', color:'white'}} 
                         component="a" 
                         href={`https://shdw-drive.genesysgo.net/${storageAccount.publicKey}/${file}`}
                         target="_blank"
+                        title="View"
+                        size="small"
                     >   
-                            <OpenInNewIcon fontSize="small" sx={{color:'white',mr:1}} />
-                            View   
+                            <OpenInNewIcon />
                     </Button>
-                    <Button onClick={HandleDeleteStoragePoolFile} color="error" sx={{borderRadius:'17px'}}>
-                        <DeleteIcon sx={{mr:1}} /> Delete
+                    <Button onClick={HandleDeleteStoragePoolFile} color="error" sx={{borderRadius:'17px'}} title="delete" size="small">
+                        <DeleteIcon />
                     </Button>
 
                 </ListItemText>
@@ -754,7 +898,6 @@ export function DriveView(props: any){
             .map((storageAccount: any, key: number) => (
                 <RenderStorageRow storageAccount={storageAccount} key={key}/>
             ))}
-
             </>
         );
     }
@@ -771,7 +914,7 @@ export function DriveView(props: any){
             const asa = await thisDrive.getStorageAccount(storagePublicKey);
 
             const accountInfo = await ggoconnection.getAccountInfo(storagePublicKey);
-            console.log("accountInfo: "+JSON.stringify(accountInfo));
+            //console.log("accountInfo: "+JSON.stringify(accountInfo));
             //.getMultipleAccountsInfo(storagePublicKey);
             
             /*
@@ -808,36 +951,6 @@ export function DriveView(props: any){
             setOpen(!open);
             getStorageFiles(storageAccount.publicKey);
         };
-
-        const uploadToStoragePool = async (files: any, storagePublicKey: PublicKey) => { 
-            try{
-                enqueueSnackbar(`Preparing to upload some files to ${storagePublicKey.toString()}`,{ variant: 'info' });
-                const snackprogress = (key:any) => (
-                    <CircularProgress sx={{padding:'10px'}} />
-                );
-                const cnfrmkey = enqueueSnackbar(`Confirming transaction`,{ variant: 'info', action:snackprogress, persist: true });
-                const signedTransaction = await thisDrive.uploadMultipleFiles(storagePublicKey, files);
-                //const signedTransaction = await thisDrive.uploadFile(storagePublicKey, files[0]);
-                await connection.confirmTransaction(signedTransaction.txid, 'max');
-                closeSnackbar(cnfrmkey);
-                console.log("TX: "+JSON.stringify(signedTransaction))
-                const snackaction = (key:any) => (
-                    <Button href={`https://explorer.solana.com/tx/${signedTransaction.txid}`} target='_blank'  sx={{color:'white'}}>
-                        {signedTransaction.txid}
-                    </Button>
-                );
-                enqueueSnackbar(`Transaction Confirmed`,{ variant: 'success', action:snackaction });
-                setTimeout(function() {
-                    fetchStorageAccounts();
-                }, 2000);
-            }catch(e){
-                closeSnackbar();
-                enqueueSnackbar(`${JSON.stringify(e)}`,{ variant: 'error' });
-                console.log("Error: "+JSON.stringify(e));
-                //console.log("Error: "+JSON.stringify(e));
-            } 
-        }
-        
 
         const handleFileUpload = (e:any) => {
             console.log(">> Checking: "+JSON.stringify(uploadFiles))
@@ -1056,7 +1169,7 @@ export function DriveView(props: any){
                                         <ListSubheader component="div" id="nested-list-subheader" sx={{borderRadius:'17px'}}>
                                           <Grid container direction="row">
                                                 <Grid item xs={6}>
-                                                    SHDW Storage
+                                                    Shadow Storage
                                                 </Grid>
                                                 <AddStoragePool account={account} />
                                             </Grid>
@@ -1079,7 +1192,7 @@ export function DriveView(props: any){
                                         <ListSubheader component="div" id="nested-list-subheader" sx={{borderRadius:'17px'}}>
                                             <Grid container direction="row">
                                                 <Grid item xs={6}>
-                                                    SHDW Storage Allocation
+                                                    Shadow Storage
                                                 </Grid>
                                                 <AddStoragePool account={account} />
                                             </Grid>
