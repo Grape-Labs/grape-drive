@@ -634,9 +634,9 @@ export function DriveView(props: any){
 
         const HandleAllocateReplaceFile = (event: any) => {
             event.preventDefault();
-            //console.log("uploadFile: "+JSON.stringify(uploadFile));
-            //console.log("storageAccountFile: "+storageAccountFile);
-            //console.log("storageAccount: "+storageAccount.publicKey);
+            console.log("uploadFile: "+JSON.stringify(uploadFile));
+            console.log("storageAccountFile: "+storageAccountFile);
+            console.log("storageAccount: "+storageAccount.publicKey);
             uploadReplaceToStoragePool(uploadFile, storageAccountFile, new PublicKey(storageAccount.publicKey));
         };
     
