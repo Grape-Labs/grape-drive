@@ -413,6 +413,7 @@ export function DriveView(props: any){
             );
             enqueueSnackbar(`Transaction Confirmed`,{ variant: 'success', action:snackaction });
             setTimeout(function() {
+                // IMPORTNAT: change to update / fetch only this account files
                 fetchStorageAccounts();
             }, 2000);
         }catch(e){
@@ -646,9 +647,9 @@ export function DriveView(props: any){
                     onClick={handleClickOpen} 
                     sx={{borderRadius:'17px'}}
                     title="Swap"
-                    disabled
+                
                 >
-                    <SwapHorizIcon/>
+                    <SwapHorizIcon sx={{color:'white'}}/>
                 </Button>
                 <BootstrapDialog 
                     maxWidth={"lg"}
