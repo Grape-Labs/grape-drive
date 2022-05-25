@@ -91,4 +91,5 @@ build
 
 #lock files
 *.lock
+package-lock.json
 ./package-lock.json
