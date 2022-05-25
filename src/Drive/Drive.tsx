@@ -395,13 +395,17 @@ export function DriveView(props: any){
     }
 
     const uploadReplaceToStoragePool = async (newFile: any, existingFileUrl: string, storagePublicKey: PublicKey) => { 
+        console.log("uploadFile: "+JSON.stringify(newFile));
+        console.log("storageAccountFile: "+existingFileUrl);
+        console.log("storageAccount: "+storagePublicKey);
+        
         try{
             enqueueSnackbar(`Preparing to upload some files to ${storagePublicKey.toString()}`,{ variant: 'info' });
             const snackprogress = (key:any) => (
                 <CircularProgress sx={{padding:'10px'}} />
             );
             const cnfrmkey = enqueueSnackbar(`Confirming transaction`,{ variant: 'info', action:snackprogress, persist: true });
-            const signedTransaction = await thisDrive.editFile(storagePublicKey, existingFileUrl, newFile);
+            const signedTransaction = await thisDrive.editFile(new PublicKey(storagePublicKey), existingFileUrl, newFile);
             //const signedTransaction = await thisDrive.uploadFile(storagePublicKey, files[0]);
             await connection.confirmTransaction(signedTransaction.txid, 'max');
             closeSnackbar(cnfrmkey);
@@ -634,11 +638,17 @@ export function DriveView(props: any){
 
         const HandleAllocateReplaceFile = (event: any) => {
             event.preventDefault();
-            console.log("uploadFile: "+JSON.stringify(uploadFile));
-            console.log("storageAccountFile: "+storageAccountFile);
-            console.log("storageAccount: "+storageAccount.publicKey);
             uploadReplaceToStoragePool(uploadFile, storageAccountFile, new PublicKey(storageAccount.publicKey));
         };
+
+        const handleFileUpload = (e:any) => {
+            event.preventDefault();
+            //console.log(">> Checking: "+JSON.stringify(uploadFile))
+            if (uploadFile){
+                console.log("Uploading file ("+JSON.stringify(uploadFile)+")...")
+                uploadReplaceToStoragePool(uploadFile, storageAccountFile, new PublicKey(storageAccount.publicKey));
+            }
+        }
     
         return (
             <>
@@ -666,7 +676,6 @@ export function DriveView(props: any){
                     <DialogTitle>
                         {t('Replace file')}
                     </DialogTitle>
-                    <form onSubmit={HandleAllocateReplaceFile}>
                         <DialogContent>
                             <FormControl>
                                 <FileUpload value={uploadFile} onChange={setUploadFile} />
@@ -678,11 +687,12 @@ export function DriveView(props: any){
                             <Button 
                                 type="submit"
                                 variant="text" 
-                                title="Replace">
+                                title="Replace"
+                                onClick={handleFileUpload}>
                                     Replace
                             </Button>
                         </DialogActions> 
-                    </form>
+                    
                 </BootstrapDialog>
             </>
             
@@ -954,9 +964,9 @@ export function DriveView(props: any){
         };
 
         const handleFileUpload = (e:any) => {
-            console.log(">> Checking: "+JSON.stringify(uploadFiles))
+            //console.log(">> Checking: "+JSON.stringify(uploadFiles))
             if (uploadFiles){
-                console.log("Uploading file...")
+                console.log("Uploading file ("+JSON.stringify(uploadFiles)+")...")
                 uploadToStoragePool(uploadFiles, storageAccount.publicKey);
             }
         }

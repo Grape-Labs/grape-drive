@@ -32,8 +32,6 @@
         "react": "^17.0.0 || ^18.0.0"
     },
     "dependencies": {
-        "@bonfida/spl-name-service": "^0.1.31",
-        "@cyberlab/cyberconnect": "^4.4.2",
         "@dialectlabs/react": "^0.5.4",
         "@dialectlabs/react-ui": "^0.8.6",
         "@emotion/react": "^11.4.1",
@@ -49,7 +47,6 @@
         "@project-serum/common": "^0.0.1-beta.3",
         "@react-native-async-storage/async-storage": "^1.15.17",
         "@shadow-drive/sdk": "^2.0.1",
-        "@solana/spl-governance": "^0.0.34",
         "@solana/spl-token": "^0.2.0",
         "@solana/spl-token-registry": "^0.2.4046",
         "@solana/wallet-adapter-base": "^0.9.5",
