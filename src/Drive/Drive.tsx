@@ -395,9 +395,9 @@ export function DriveView(props: any){
     }
 
     const uploadReplaceToStoragePool = async (newFile: any, existingFileUrl: string, storagePublicKey: PublicKey) => { 
-        console.log("uploadFile: "+JSON.stringify(newFile));
-        console.log("storageAccountFile: "+existingFileUrl);
-        console.log("storageAccount: "+storagePublicKey);
+        console.log("key: "+storagePublicKey);
+        console.log("url: "+existingFileUrl);
+        console.log("data: "+JSON.stringify(newFile));
         
         try{
             enqueueSnackbar(`Preparing to upload some files to ${storagePublicKey.toString()}`,{ variant: 'info' });
