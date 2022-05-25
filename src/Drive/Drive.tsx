@@ -241,6 +241,7 @@ export function DriveView(props: any){
                 </Button>
             );
             enqueueSnackbar(`Transaction Confirmed`,{ variant: 'success', action:snackaction });
+            
             setTimeout(function() {
                 fetchStorageAccounts();
             }, 2000);
@@ -634,6 +635,7 @@ export function DriveView(props: any){
         const HandleAllocateReplaceFile = (event: any) => {
             event.preventDefault();
             uploadReplaceToStoragePool(uploadFile, storageAccountFile, new PublicKey(storageAccount.publicKey));
+            setOpen(false);
         };
 
         const handleFileUpload = (e:any) => {
@@ -642,6 +644,7 @@ export function DriveView(props: any){
             if (uploadFile){
                 console.log("Uploading file ("+JSON.stringify(uploadFile)+")...")
                 uploadReplaceToStoragePool(uploadFile[0], storageAccountFile, new PublicKey(storageAccount.publicKey));
+                setOpen(false);
             }
         }
     
