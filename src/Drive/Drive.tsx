@@ -147,8 +147,8 @@ export function DriveView(props: any){
             const snackprogress = (key:any) => (
                 <CircularProgress sx={{padding:'10px'}} />
             );
-            const cnfrmkey = enqueueSnackbar(`Confirming transaction`,{ variant: 'info', action:snackprogress, persist: true });
             const signedTransaction = await thisDrive.createStorageAccount(name, size)
+            const cnfrmkey = enqueueSnackbar(`Confirming transaction`,{ variant: 'info', action:snackprogress, persist: true });
             await connection.confirmTransaction(signedTransaction.txid, 'processed');
             closeSnackbar(cnfrmkey);
             const snackaction = (key:any) => (
@@ -174,8 +174,8 @@ export function DriveView(props: any){
             const snackprogress = (key:any) => (
                 <CircularProgress sx={{padding:'10px'}} />
             );
-            const cnfrmkey = enqueueSnackbar(`Confirming transaction`,{ variant: 'info', action:snackprogress, persist: true });
             const signedTransaction = await thisDrive.cancelDeleteStorageAccount(storagePublicKey);
+            const cnfrmkey = enqueueSnackbar(`Confirming transaction`,{ variant: 'info', action:snackprogress, persist: true });
             await connection.confirmTransaction(signedTransaction.txid, 'processed');
             closeSnackbar(cnfrmkey);
             const snackaction = (key:any) => (
@@ -201,9 +201,9 @@ export function DriveView(props: any){
             const snackprogress = (key:any) => (
                 <CircularProgress sx={{padding:'10px'}} />
             );
-            const cnfrmkey = enqueueSnackbar(`Confirming transaction`,{ variant: 'info', action:snackprogress, persist: true });
             //console.log(storagePublicKey + "/"+storageAccount+" - file: "+file);
             const signedTransaction = await thisDrive.cancelDeleteFile(storagePublicKey, 'https://shdw-drive.genesysgo.net/'+storagePublicKey.toBase58()+'/'+file);
+            const cnfrmkey = enqueueSnackbar(`Confirming transaction`,{ variant: 'info', action:snackprogress, persist: true });
             await connection.confirmTransaction(signedTransaction.txid, 'processed');
             closeSnackbar(cnfrmkey);
             const snackaction = (key:any) => (
@@ -230,9 +230,9 @@ export function DriveView(props: any){
             const snackprogress = (key:any) => (
                 <CircularProgress sx={{padding:'10px'}} />
             );
-            const cnfrmkey = enqueueSnackbar(`Confirming transaction`,{ variant: 'info', action:snackprogress, persist: true });
             //console.log(storagePublicKey + "/"+storageAccount+" - file: "+file);
             const signedTransaction = await thisDrive.deleteFile(storagePublicKey, 'https://shdw-drive.genesysgo.net/'+storagePublicKey.toBase58()+'/'+file);
+            const cnfrmkey = enqueueSnackbar(`Confirming transaction`,{ variant: 'info', action:snackprogress, persist: true });
             await connection.confirmTransaction(signedTransaction.txid, 'processed');
             closeSnackbar(cnfrmkey);
             const snackaction = (key:any) => (
@@ -259,9 +259,8 @@ export function DriveView(props: any){
             const snackprogress = (key:any) => (
                 <CircularProgress sx={{padding:'10px'}} />
             );
-            const cnfrmkey = enqueueSnackbar(`Confirming transaction`,{ variant: 'info', action:snackprogress, persist: true });
-            
             const signedTransaction = await thisDrive.addStorage(storagePublicKey, size);
+            const cnfrmkey = enqueueSnackbar(`Confirming transaction`,{ variant: 'info', action:snackprogress, persist: true });
             await connection.confirmTransaction(signedTransaction.txid, 'confirmed');
             closeSnackbar(cnfrmkey);
             const snackaction = (key:any) => (
@@ -288,8 +287,8 @@ export function DriveView(props: any){
             const snackprogress = (key:any) => (
                 <CircularProgress sx={{padding:'10px'}} />
             );
-            const cnfrmkey = enqueueSnackbar(`Confirming transaction`,{ variant: 'info', action:snackprogress, persist: true });
             const signedTransaction = await thisDrive.reduceStorage(storagePublicKey, size);
+            const cnfrmkey = enqueueSnackbar(`Confirming transaction`,{ variant: 'info', action:snackprogress, persist: true });
             await connection.confirmTransaction(signedTransaction.txid, 'processed');
             closeSnackbar(cnfrmkey);
             const snackaction = (key:any) => (
@@ -316,8 +315,8 @@ export function DriveView(props: any){
             const snackprogress = (key:any) => (
                 <CircularProgress sx={{padding:'10px'}} />
             );
-            const cnfrmkey = enqueueSnackbar(`Confirming transaction`,{ variant: 'info', action:snackprogress, persist: true });
             const signedTransaction = await thisDrive.deleteStorageAccount(storagePublicKey);
+            const cnfrmkey = enqueueSnackbar(`Confirming transaction`,{ variant: 'info', action:snackprogress, persist: true });
             await connection.confirmTransaction(signedTransaction.txid, 'processed');
             closeSnackbar(cnfrmkey);
             const snackaction = (key:any) => (
@@ -371,9 +370,9 @@ export function DriveView(props: any){
             const snackprogress = (key:any) => (
                 <CircularProgress sx={{padding:'10px'}} />
             );
-            const cnfrmkey = enqueueSnackbar(`Confirming transaction`,{ variant: 'info', action:snackprogress, persist: true });
             const signedTransaction = await thisDrive.uploadMultipleFiles(storagePublicKey, files);
             //const signedTransaction = await thisDrive.uploadFile(storagePublicKey, files[0]);
+            const cnfrmkey = enqueueSnackbar(`Confirming transaction`,{ variant: 'info', action:snackprogress, persist: true });
             await connection.confirmTransaction(signedTransaction.txid, 'max');
             closeSnackbar(cnfrmkey);
             console.log("TX: "+JSON.stringify(signedTransaction))
@@ -395,18 +394,14 @@ export function DriveView(props: any){
     }
 
     const uploadReplaceToStoragePool = async (newFile: any, existingFileUrl: string, storagePublicKey: PublicKey) => { 
-        console.log("key: "+storagePublicKey);
-        console.log("url: "+existingFileUrl);
-        console.log("data: "+JSON.stringify(newFile));
-        
         try{
             enqueueSnackbar(`Preparing to upload some files to ${storagePublicKey.toString()}`,{ variant: 'info' });
             const snackprogress = (key:any) => (
                 <CircularProgress sx={{padding:'10px'}} />
             );
-            const cnfrmkey = enqueueSnackbar(`Confirming transaction`,{ variant: 'info', action:snackprogress, persist: true });
             const signedTransaction = await thisDrive.editFile(new PublicKey(storagePublicKey), existingFileUrl, newFile);
             //const signedTransaction = await thisDrive.uploadFile(storagePublicKey, files[0]);
+            const cnfrmkey = enqueueSnackbar(`Confirming transaction`,{ variant: 'info', action:snackprogress, persist: true });
             await connection.confirmTransaction(signedTransaction.txid, 'max');
             closeSnackbar(cnfrmkey);
             console.log("TX: "+JSON.stringify(signedTransaction))
@@ -434,8 +429,8 @@ export function DriveView(props: any){
             const snackprogress = (key:any) => (
                 <CircularProgress sx={{padding:'10px'}} />
             );
-            const cnfrmkey = enqueueSnackbar(`Confirming transaction`,{ variant: 'info', action:snackprogress, persist: true });
             const signedTransaction = await thisDrive.claimStake(storagePublicKey);
+            const cnfrmkey = enqueueSnackbar(`Confirming transaction`,{ variant: 'info', action:snackprogress, persist: true });
             await connection.confirmTransaction(signedTransaction.txid, 'processed');
             closeSnackbar(cnfrmkey);
             const snackaction = (key:any) => (
@@ -646,7 +641,7 @@ export function DriveView(props: any){
             //console.log(">> Checking: "+JSON.stringify(uploadFile))
             if (uploadFile){
                 console.log("Uploading file ("+JSON.stringify(uploadFile)+")...")
-                uploadReplaceToStoragePool(uploadFile, storageAccountFile, new PublicKey(storageAccount.publicKey));
+                uploadReplaceToStoragePool(uploadFile[0], storageAccountFile, new PublicKey(storageAccount.publicKey));
             }
         }
     
