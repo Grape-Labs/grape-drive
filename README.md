@@ -3,7 +3,7 @@
 - Grape Drive, is a quick dive to make a simple UI utilizing Shadow Drive
 
 Pending to be completed
-- Update file
+- Add support for folders
 - Prompt if SHDW token not in wallet and token amount required prior to sending to the wallet
 
 References:
