@@ -2,6 +2,7 @@ import React, { useEffect, useCallback, useRef } from "react";
 import { ShdwDrive } from "@shadow-drive/sdk";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { LAMPORTS_PER_SOL, Connection, PublicKey } from '@solana/web3.js';
+import { Schema, deserializeUnchecked, deserialize } from "borsh";
 import { BN } from '@project-serum/anchor';
 import { TokenAmount } from '../utils/grapeTools/safe-math';
 
@@ -82,7 +83,7 @@ import TextSnippetIcon from '@mui/icons-material/TextSnippet';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import CloudCircleIcon from '@mui/icons-material/CloudCircle';
-import { StorageTwoTone, StrikethroughS } from "@mui/icons-material";
+import { ConstructionOutlined, StorageTwoTone, StrikethroughS } from "@mui/icons-material";
 
 const Input = styled('input')({
     display: 'none',
@@ -914,7 +915,7 @@ export function DriveView(props: any){
     function RenderStorageRow(props: any){
         const storageAccount = props.storageAccount;
         const [uploadFiles, setUploadFiles] = React.useState(null);
-        const key = props.key;
+        //const key = props.key;
         const [open, setOpen] = React.useState(false);
         const [currentFiles, setCurrentFiles] = React.useState(null);
         const ggoconnection = new Connection(GRAPE_RPC_ENDPOINT);
@@ -923,24 +924,32 @@ export function DriveView(props: any){
             const asa = await thisDrive.getStorageAccount(storagePublicKey);
 
             const accountInfo = await ggoconnection.getAccountInfo(storagePublicKey);
-            //console.log("accountInfo: "+JSON.stringify(accountInfo));
-            //.getMultipleAccountsInfo(storagePublicKey);
             
-            /*
-            for (const storageAccount of accountInfo) {
+            //for (const storageAccount of accountInfo) {
+                
                 let fileAccounts = []
                 let fileCounter = new BN(storageAccount.account.initCounter).toNumber() - 1;
                 for (let counter = 0; counter <= fileCounter; counter++) {
                   let fileSeed = new BN(counter).toTwos(64).toArrayLike(Buffer, "le", 4);
-                  let [file, fileBump] = await anchor.web3.PublicKey.findProgramAddress(
+                  let [file, fileBump] = await PublicKey.findProgramAddress(
                     [storageAccount.publicKey.toBytes(), fileSeed],
-                    programClient.programId
+                    new PublicKey("2e1wdyNhUvE76y6yUCvah2KaviavMJYKoRun8acMRBZZ")//programClient.programId
                   );
                   fileAccounts.push(file)
                 }
-            }
-            */
+                
+            //}
 
+            console.log("fileAccounts: "+JSON.stringify(fileAccounts));
+            const fileInfo = await ggoconnection.getMultipleAccountsInfo(fileAccounts);
+            
+            console.log("fileInfo: "+JSON.stringify(fileInfo));
+            for (var metavalue of fileInfo){
+                if (metavalue?.data){
+                    // deserialize using which struct?
+                }
+            }
+            
             const body = {
                 storageAccount: storagePublicKey.toString()
             };
@@ -991,7 +1000,7 @@ export function DriveView(props: any){
 
         return (
             <Box sx={{borderBottom:'1px solid #333', borderRadius:'17px'}}>
-                <ListItemButton key={key} sx={{borderRadius:'17px'}} onClick={handleClickExpandRow}>
+                <ListItemButton sx={{borderRadius:'17px'}} onClick={handleClickExpandRow}>
                     <ListItemAvatar>
                     <Avatar>
                         {/*<SolanaIcon sx={{fontSize:"30px",ml:0.45,mt:1}} />*/}
