@@ -84,6 +84,7 @@ import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import CloudCircleIcon from '@mui/icons-material/CloudCircle';
 import { ConstructionOutlined, StorageTwoTone, StrikethroughS } from "@mui/icons-material";
+import { buffer } from "node:stream/consumers";
 
 const Input = styled('input')({
     display: 'none',
@@ -912,6 +913,28 @@ export function DriveView(props: any){
         );
     }
 
+    class Assignable {
+        constructor(properties) {
+          Object.keys(properties).map((key) => {
+            return (this[key] = properties[key]);
+          });
+        }
+    }
+    class AccoundData extends Assignable {}
+    const dataSchema = new Map([
+        [
+          AccoundData,
+          {
+            kind: "struct",
+            fields: [
+              ["initialized", "u8"],
+              ["tree_length", "u32"],
+              ["map", { kind: "map", key: "string", value: "string" }],
+            ],
+          },
+        ],
+      ]);
+
     function RenderStorageRow(props: any){
         const storageAccount = props.storageAccount;
         const [uploadFiles, setUploadFiles] = React.useState(null);
@@ -947,6 +970,8 @@ export function DriveView(props: any){
             for (var metavalue of fileInfo){
                 if (metavalue?.data){
                     // deserialize using which struct?
+                    //deserializeUnchecked(dataSchema, AccoundData, metavalue?.data);
+
                 }
             }
             
