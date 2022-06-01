@@ -928,8 +928,8 @@ export function DriveView(props: any){
             kind: "struct",
             fields: [
               ["initialized", "u8"],
-              ["tree_length", "u32"],
-              ["map", { kind: "map", key: "string", value: "string" }],
+              ["filetest", "u32"],
+              ["test", "u64"],
             ],
           },
         ],
@@ -944,9 +944,9 @@ export function DriveView(props: any){
         const ggoconnection = new Connection(GRAPE_RPC_ENDPOINT);
 
         const getStorageFiles = async (storagePublicKey: PublicKey) => { 
-            const asa = await thisDrive.getStorageAccount(storagePublicKey);
+            //const asa = await thisDrive.getStorageAccount(storagePublicKey);
 
-            const accountInfo = await ggoconnection.getAccountInfo(storagePublicKey);
+            //const accountInfo = await ggoconnection.getAccountInfo(storagePublicKey);
             
             //for (const storageAccount of accountInfo) {
                 
@@ -963,17 +963,17 @@ export function DriveView(props: any){
                 
             //}
 
-            console.log("fileAccounts: "+JSON.stringify(fileAccounts));
+            /*
             const fileInfo = await ggoconnection.getMultipleAccountsInfo(fileAccounts);
             
-            console.log("fileInfo: "+JSON.stringify(fileInfo));
+            //console.log("fileInfo: "+JSON.stringify(fileInfo));
             for (var metavalue of fileInfo){
                 if (metavalue?.data){
-                    // deserialize using which struct?
-                    //deserializeUnchecked(dataSchema, AccoundData, metavalue?.data);
+const deserialized = deserializeUnchecked(dataSchema, AccoundData, metavalue?.data);
+                    console.log("deserialized: "+JSON.stringify(deserialized));
 
                 }
-            }
+            }*/
             
             const body = {
                 storageAccount: storagePublicKey.toString()
