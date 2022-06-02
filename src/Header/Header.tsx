@@ -60,7 +60,7 @@ import {
 
 import SearchIcon from '@mui/icons-material/Search';
 
-import { GRAPE_PROFILE, GRAPE_PREVIEW, GRAPE_RPC_ENDPOINT } from '../utils/grapeTools/constants';
+import { GRAPE_RPC_ENDPOINT } from '../utils/grapeTools/constants';
 import { ValidateAddress } from '../utils/grapeTools/WalletAddress'; // global key handling
 
 import { useTranslation } from 'react-i18next';
@@ -217,7 +217,7 @@ export function Header(props: any) {
         if ((newinputpkvalue && newinputpkvalue.length>0 && ValidateAddress(newinputpkvalue))||
             ((newinputpkvalue.toLocaleUpperCase().indexOf(".SOL") > -1) || (newinputpkvalue.slice(0,1) === '@'))){
             navigate({
-                pathname: GRAPE_PROFILE+newinputpkvalue
+                pathname: "/"+newinputpkvalue
             },
                 { replace: true }
             );
@@ -227,7 +227,7 @@ export function Header(props: any) {
                 let mint = newinputpkvalue.slice(5,newinputpkvalue.length);
                 if (ValidateAddress(mint)){
                     navigate({
-                        pathname: GRAPE_PREVIEW+mint
+                        pathname: "/"+mint
                     },
                         { replace: true }
                     );

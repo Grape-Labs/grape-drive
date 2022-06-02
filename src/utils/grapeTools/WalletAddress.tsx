@@ -11,8 +11,6 @@ import InsertLinkIcon from '@mui/icons-material/InsertLink';
 import moment from 'moment';
 import { PublicKey } from '@solana/web3.js';
 
-import { FEATURED_DAO_ARRAY } from './constants';
-
 const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
     props,
     ref,
@@ -105,13 +103,6 @@ export function ValidateAddress(address:any){
             //let base58 = useMemo(() => props?.toBase58(), [props]) || null;
             if ((address.length >= 32) && 
                 (address.length <= 45)){    
-                    for (var featured of FEATURED_DAO_ARRAY){
-                        if (featured.address === address){
-                            return true;
-                        }
-                    }
-                    if ((address === 'JAbgQLj9MoJ2Kvie8t8Y6z6as3Epf7rDp87Po3wFwrNK'))
-                        return true;
                 return ValidateCurve(address);
             }
             return false;

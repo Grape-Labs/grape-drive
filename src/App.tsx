@@ -124,9 +124,11 @@ function DashboardContent() {
                               >
                               <Container maxWidth="xl" sx={{ mb: 4 }}>
                                   <Routes>
-
-                                    <Route path="/" element={<DriveView/>} />
                                     
+                                    <Route path="/*" element={<DriveView />} >
+                                        <Route path=":handlekey" element={<DriveView />} />
+                                    </Route>
+
                                     <Route path="*" element={<NotFound />} />
                                   </Routes>
                                   
