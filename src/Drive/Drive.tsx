@@ -1158,11 +1158,9 @@ const deserialized = deserializeUnchecked(dataSchema, AccoundData, metavalue?.da
                             >
                                 <Grid container sx={{p:0,m:0}}>
                                     <Grid item xs={12}>   
-                                        <Tooltip title={`Last Fee Epoch: ${(storageAccount.account.lastFeeEpoch)}`}>
-                                            <Button sx={{color:'#fff'}}> 
-                                                {(storageAccount.account.totalCostOfCurrentStorage/LAMPORTS_PER_SOL)}<SolCurrencyIcon sx={{ml:0.5,mr:1,fontSize:"12px"}}  /> Storage Cost
-                                            </Button>
-                                        </Tooltip>
+                                        <Button sx={{color:'#fff'}} title={`Last Fee Epoch: ${(storageAccount.account.lastFeeEpoch)}`}> 
+                                            {(storageAccount.account.totalCostOfCurrentStorage/LAMPORTS_PER_SOL)}<SolCurrencyIcon sx={{ml:0.5,mr:1,fontSize:"12px"}}  /> Storage Cost
+                                        </Button>
                                     </Grid>
                                 </Grid>
                             </Paper>
