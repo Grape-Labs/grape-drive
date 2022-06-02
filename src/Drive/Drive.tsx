@@ -1,4 +1,5 @@
 import React, { useEffect, useCallback, useRef } from "react";
+import { Link, useParams, useSearchParams } from "react-router-dom";
 import { ShdwDrive } from "@shadow-drive/sdk";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { LAMPORTS_PER_SOL, Connection, PublicKey } from '@solana/web3.js';
@@ -128,6 +129,10 @@ export function DriveView(props: any){
 	const [account, setAccount] = React.useState(null);
     const [loading, setLoading] = React.useState(false);
     const [thisDrive, setThisDrive] = React.useState(null);
+
+    const {handlekey} = useParams<{ handlekey: string }>();
+    const [searchParams, setSearchParams] = useSearchParams();
+    const urlParams = searchParams.get("storage") || searchParams.get("address") || handlekey;
 
     const { enqueueSnackbar, closeSnackbar } = useSnackbar();
     const onError = useCallback(
@@ -455,7 +460,18 @@ export function DriveView(props: any){
 
     useEffect(() => {
 		(async () => {
-			if (wallet?.publicKey) {
+			
+
+            if (urlParams){
+                console.log("PARAMS: "+urlParams);
+
+                setLoading(true);
+                
+                // get single storage account
+                
+                setLoading(false);
+
+            } else if (wallet?.publicKey) {
                 setLoading(true);
 				const drive = await new ShdwDrive(new Connection(GRAPE_RPC_ENDPOINT), wallet).init();
                 //console.log("drive: "+JSON.stringify(drive));
@@ -471,8 +487,9 @@ export function DriveView(props: any){
 
                 setLoading(false);
 			}
+
 		})();
-	}, [wallet?.publicKey])
+	}, [wallet?.publicKey, urlParams])
 	
     function AddStoragePool(props:any){
         const { t, i18n } = useTranslation();
@@ -1067,7 +1084,7 @@ const deserialized = deserializeUnchecked(dataSchema, AccoundData, metavalue?.da
                             justifyContent={'center'}
                         >
                             <Paper 
-                                sx={{p:1,background:'#000', borderRadius:'17px'}}
+                                sx={{p:0,background:'#000', borderRadius:'17px'}}
                             >
                                 <Typography variant="caption">
                                     {`${storageAccount.publicKey}`}
@@ -1139,15 +1156,13 @@ const deserialized = deserializeUnchecked(dataSchema, AccoundData, metavalue?.da
                             <Paper
                                 sx={{background:'#000'}}
                             >
-                                <Grid container>
-                                    <Grid item xs={12} sx={{p:0,m:0}}>    
-                                            Storage Cost: {(storageAccount.account.totalCostOfCurrentStorage/LAMPORTS_PER_SOL)}<SolCurrencyIcon sx={{fontSize:"9px"}}  />
-                                    </Grid>
-                                    <Grid item xs={6} sx={{p:0,m:0}}>  
-                                            Creation: {(storageAccount.account.creationEpoch)}
-                                    </Grid>
-                                    <Grid item xs={6}  sx={{p:0,m:0}} alignItems="right">    
-                                            Last Fee: {(storageAccount.account.lastFeeEpoch)}
+                                <Grid container sx={{p:0,m:0}}>
+                                    <Grid item xs={12}>   
+                                        <Tooltip title={`Last Fee Epoch: ${(storageAccount.account.lastFeeEpoch)}`}>
+                                            <Button sx={{color:'#fff'}}> 
+                                                {(storageAccount.account.totalCostOfCurrentStorage/LAMPORTS_PER_SOL)}<SolCurrencyIcon sx={{ml:0.5,mr:1,fontSize:"12px"}}  /> Storage Cost
+                                            </Button>
+                                        </Tooltip>
                                     </Grid>
                                 </Grid>
                             </Paper>
