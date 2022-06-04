@@ -81,6 +81,7 @@ function DashboardContent() {
     new SlopeWalletAdapter(),
     new TorusWalletAdapter(),
     new LedgerWalletAdapter(),
+    new ExodusWalletAdapter(),
     new SolletWalletAdapter({ network }),
     new SolletExtensionWalletAdapter({ network }),
     new CloverWalletAdapter(),
@@ -92,7 +93,6 @@ function DashboardContent() {
     new BitKeepWalletAdapter(),
     new BitpieWalletAdapter(),
     new SafePalWalletAdapter(),
-    new ExodusWalletAdapter(),
   ], [network]);
   
   return (
