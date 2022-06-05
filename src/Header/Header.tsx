@@ -54,10 +54,11 @@ import {
     Container,
     List,
     ListItem,
-    ListItemText
+    ListItemText,
+    IconButton
 } from '@mui/material';
 
-
+import DashboardOutlinedIcon from '@mui/icons-material/DashboardOutlined';
 import SearchIcon from '@mui/icons-material/Search';
 
 import { GRAPE_RPC_ENDPOINT } from '../utils/grapeTools/constants';
@@ -261,6 +262,7 @@ export function Header(props: any) {
                     >
                         <img src={MARKET_LOGO} height="40px" width="137px" className="header-logo" alt="Powered by Grape" />
                     </Typography>
+                    <Tooltip title={`Back to the Dashboard`}><IconButton component="a" href='https://verify.grapes.network' target="_blank"><DashboardOutlinedIcon/></IconButton></Tooltip>
                 </Button>
                 
             </Box>
