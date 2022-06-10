@@ -400,7 +400,7 @@ export function DriveView(props: any){
             //console.log("Error: "+JSON.stringify(e));
         } 
     }
-
+    
     const uploadReplaceToStoragePool = async (newFile: any, existingFileUrl: string, storagePublicKey: PublicKey) => { 
         try{
             enqueueSnackbar(`Preparing to upload some files to ${storagePublicKey.toString()}`,{ variant: 'info' });
