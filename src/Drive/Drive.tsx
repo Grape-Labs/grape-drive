@@ -156,7 +156,13 @@ export function DriveView(props: any){
             );
             const cnfrmkey = enqueueSnackbar(`Confirming transaction`,{ variant: 'info', action:snackprogress, persist: true });
             const signedTransaction = await thisDrive.createStorageAccount(name, size)
-            await connection.confirmTransaction(signedTransaction.txid, 'processed');
+            const latestBlockHash = await connection.getLatestBlockhash();
+            await connection.confirmTransaction({
+                blockhash: latestBlockHash.blockhash,
+                lastValidBlockHeight: latestBlockHash.lastValidBlockHeight,
+                signature: signedTransaction.txid}, 
+                'processed'
+            );
             closeSnackbar(cnfrmkey);
             const snackaction = (key:any) => (
                 <Button href={`https://explorer.solana.com/tx/${signedTransaction?.txid}`} target='_blank'  sx={{color:'white'}}>
@@ -183,7 +189,13 @@ export function DriveView(props: any){
             );
             const cnfrmkey = enqueueSnackbar(`Confirming transaction`,{ variant: 'info', action:snackprogress, persist: true });
             const signedTransaction = await thisDrive.cancelDeleteStorageAccount(storagePublicKey);
-            await connection.confirmTransaction(signedTransaction.txid, 'processed');
+            const latestBlockHash = await connection.getLatestBlockhash();
+            await connection.confirmTransaction({
+                blockhash: latestBlockHash.blockhash,
+                lastValidBlockHeight: latestBlockHash.lastValidBlockHeight,
+                signature: signedTransaction.txid}, 
+                'processed'
+            );
             closeSnackbar(cnfrmkey);
             const snackaction = (key:any) => (
                 <Button href={`https://explorer.solana.com/tx/${signedTransaction.txid}`} target='_blank'  sx={{color:'white'}}>
@@ -211,7 +223,13 @@ export function DriveView(props: any){
             //console.log(storagePublicKey + "/"+storageAccount+" - file: "+file);
             const cnfrmkey = enqueueSnackbar(`Confirming transaction`,{ variant: 'info', action:snackprogress, persist: true });
             const signedTransaction = await thisDrive.cancelDeleteFile(storagePublicKey, 'https://shdw-drive.genesysgo.net/'+storagePublicKey.toBase58()+'/'+file);
-            await connection.confirmTransaction(signedTransaction.txid, 'processed');
+            const latestBlockHash = await connection.getLatestBlockhash();
+            await connection.confirmTransaction({
+                blockhash: latestBlockHash.blockhash,
+                lastValidBlockHeight: latestBlockHash.lastValidBlockHeight,
+                signature: signedTransaction.txid}, 
+                'processed'
+            );
             closeSnackbar(cnfrmkey);
             const snackaction = (key:any) => (
                 <Button href={`https://explorer.solana.com/tx/${signedTransaction.txid}`} target='_blank'  sx={{color:'white'}}>
@@ -240,7 +258,13 @@ export function DriveView(props: any){
             //console.log(storagePublicKey + "/"+storageAccount+" - file: "+file);
             const cnfrmkey = enqueueSnackbar(`Confirming transaction`,{ variant: 'info', action:snackprogress, persist: true });
             const signedTransaction = await thisDrive.deleteFile(storagePublicKey, 'https://shdw-drive.genesysgo.net/'+storagePublicKey.toBase58()+'/'+file);
-            await connection.confirmTransaction(signedTransaction.txid, 'processed');
+            const latestBlockHash = await connection.getLatestBlockhash();
+            await connection.confirmTransaction({
+                blockhash: latestBlockHash.blockhash,
+                lastValidBlockHeight: latestBlockHash.lastValidBlockHeight,
+                signature: signedTransaction.txid}, 
+                'processed'
+            );
             closeSnackbar(cnfrmkey);
             const snackaction = (key:any) => (
                 <Button href={`https://explorer.solana.com/tx/${signedTransaction.txid}`} target='_blank'  sx={{color:'white'}}>
@@ -269,7 +293,13 @@ export function DriveView(props: any){
             );
             const cnfrmkey = enqueueSnackbar(`Confirming transaction`,{ variant: 'info', action:snackprogress, persist: true });
             const signedTransaction = await thisDrive.addStorage(storagePublicKey, size);
-            await connection.confirmTransaction(signedTransaction.txid, 'confirmed');
+            const latestBlockHash = await connection.getLatestBlockhash();
+            await connection.confirmTransaction({
+                blockhash: latestBlockHash.blockhash,
+                lastValidBlockHeight: latestBlockHash.lastValidBlockHeight,
+                signature: signedTransaction.txid}, 
+                'processed'
+            );
             closeSnackbar(cnfrmkey);
             const snackaction = (key:any) => (
                 <Button href={`https://explorer.solana.com/tx/${signedTransaction.txid}`} target='_blank'  sx={{color:'white'}}>
@@ -297,7 +327,13 @@ export function DriveView(props: any){
             );
             const cnfrmkey = enqueueSnackbar(`Confirming transaction`,{ variant: 'info', action:snackprogress, persist: true });
             const signedTransaction = await thisDrive.reduceStorage(storagePublicKey, size);
-            await connection.confirmTransaction(signedTransaction.txid, 'processed');
+            const latestBlockHash = await connection.getLatestBlockhash();
+            await connection.confirmTransaction({
+                blockhash: latestBlockHash.blockhash,
+                lastValidBlockHeight: latestBlockHash.lastValidBlockHeight,
+                signature: signedTransaction.txid}, 
+                'processed'
+            );
             closeSnackbar(cnfrmkey);
             const snackaction = (key:any) => (
                 <Button href={`https://explorer.solana.com/tx/${signedTransaction.txid}`} target='_blank'  sx={{color:'white'}}>
@@ -325,7 +361,13 @@ export function DriveView(props: any){
             );
             const cnfrmkey = enqueueSnackbar(`Confirming transaction`,{ variant: 'info', action:snackprogress, persist: true });
             const signedTransaction = await thisDrive.deleteStorageAccount(storagePublicKey);
-            await connection.confirmTransaction(signedTransaction.txid, 'processed');
+            const latestBlockHash = await connection.getLatestBlockhash();
+            await connection.confirmTransaction({
+                blockhash: latestBlockHash.blockhash,
+                lastValidBlockHeight: latestBlockHash.lastValidBlockHeight,
+                signature: signedTransaction.txid}, 
+                'processed'
+            );
             closeSnackbar(cnfrmkey);
             const snackaction = (key:any) => (
                 <Button href={`https://explorer.solana.com/tx/${signedTransaction.txid}`} target='_blank'  sx={{color:'white'}}>
@@ -353,7 +395,13 @@ export function DriveView(props: any){
             );
             const cnfrmkey = enqueueSnackbar(`Confirming transaction`,{ variant: 'info', action:snackprogress, persist: true });
             const signedTransaction = await thisDrive.makeStorageImmutable(storagePublicKey);
-            await connection.confirmTransaction(signedTransaction.txid, 'processed');
+            const latestBlockHash = await connection.getLatestBlockhash();
+            await connection.confirmTransaction({
+                blockhash: latestBlockHash.blockhash,
+                lastValidBlockHeight: latestBlockHash.lastValidBlockHeight,
+                signature: signedTransaction.txid}, 
+                'processed'
+            );
             closeSnackbar(cnfrmkey);
             const snackaction = (key:any) => (
                 <Button href={`https://explorer.solana.com/tx/${signedTransaction.txid}`} target='_blank'  sx={{color:'white'}}>
@@ -381,7 +429,13 @@ export function DriveView(props: any){
             const cnfrmkey = enqueueSnackbar(`Confirming transaction`,{ variant: 'info', action:snackprogress, persist: true });
             const signedTransaction = await thisDrive.uploadMultipleFiles(storagePublicKey, files);
             //const signedTransaction = await thisDrive.uploadFile(storagePublicKey, files[0]);
-            await connection.confirmTransaction(signedTransaction.transaction_signature, 'max');
+            const latestBlockHash = await connection.getLatestBlockhash();
+            await connection.confirmTransaction({
+                blockhash: latestBlockHash.blockhash,
+                lastValidBlockHeight: latestBlockHash.lastValidBlockHeight,
+                signature: signedTransaction.transaction_signature}, 
+                'max'
+            );
             closeSnackbar(cnfrmkey);
             console.log("TX: "+JSON.stringify(signedTransaction))
             const snackaction = (key:any) => (
@@ -410,7 +464,14 @@ export function DriveView(props: any){
             const cnfrmkey = enqueueSnackbar(`Confirming transaction`,{ variant: 'info', action:snackprogress, persist: true });
             const signedTransaction = await thisDrive.editFile(new PublicKey(storagePublicKey), existingFileUrl, newFile);
             //const signedTransaction = await thisDrive.uploadFile(storagePublicKey, files[0]);
-            await connection.confirmTransaction(signedTransaction.transaction_signature, 'max');
+            //await connection.confirmTransaction(signedTransaction.transaction_signature, 'max');
+            const latestBlockHash = await connection.getLatestBlockhash();
+            await connection.confirmTransaction({
+                blockhash: latestBlockHash.blockhash,
+                lastValidBlockHeight: latestBlockHash.lastValidBlockHeight,
+                signature: signedTransaction.transaction_signature}, 
+                'max'
+            );
             closeSnackbar(cnfrmkey);
             console.log("TX: "+JSON.stringify(signedTransaction))
             const snackaction = (key:any) => (
@@ -439,7 +500,13 @@ export function DriveView(props: any){
             );
             const cnfrmkey = enqueueSnackbar(`Confirming transaction`,{ variant: 'info', action:snackprogress, persist: true });
             const signedTransaction = await thisDrive.claimStake(storagePublicKey);
-            await connection.confirmTransaction(signedTransaction.txid, 'processed');
+            const latestBlockHash = await connection.getLatestBlockhash();
+            await connection.confirmTransaction({
+                blockhash: latestBlockHash.blockhash,
+                lastValidBlockHeight: latestBlockHash.lastValidBlockHeight,
+                signature: signedTransaction.txid}, 
+                'processed'
+            );
             closeSnackbar(cnfrmkey);
             const snackaction = (key:any) => (
                 <Button href={`https://explorer.solana.com/tx/${signedTransaction.txid}`} target='_blank'  sx={{color:'white'}}>
