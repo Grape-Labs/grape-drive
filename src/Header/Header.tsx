@@ -262,9 +262,8 @@ export function Header(props: any) {
                     >
                         <img src={MARKET_LOGO} height="40px" width="137px" className="header-logo" alt="Powered by Grape" />
                     </Typography>
-                    <Tooltip title={`Back to the Dashboard`}><IconButton component="a" href='https://verify.grapes.network'><DashboardOutlinedIcon/></IconButton></Tooltip>
                 </Button>
-                
+                <Tooltip title={`Back to the Dashboard`}><IconButton sx={{borderRadius:'17px'}} component="a" href='https://verify.grapes.network'><DashboardOutlinedIcon/></IconButton></Tooltip>
             </Box>
             <div className="grape-dialect">
             <ChatButton wallet={wallet} network={'mainnet'} theme={theme} rpcUrl={GRAPE_RPC_ENDPOINT} bellClassName='grape-chat' />
