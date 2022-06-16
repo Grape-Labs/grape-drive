@@ -160,13 +160,13 @@ export function DriveView(props: any){
             await connection.confirmTransaction({
                 blockhash: latestBlockHash.blockhash,
                 lastValidBlockHeight: latestBlockHash.lastValidBlockHeight,
-                signature: signedTransaction.txid}, 
-                'processed'
+                signature: signedTransaction.transaction_signature}, 
+                'max'
             );
             closeSnackbar(cnfrmkey);
             const snackaction = (key:any) => (
-                <Button href={`https://explorer.solana.com/tx/${signedTransaction?.txid}`} target='_blank'  sx={{color:'white'}}>
-                    {signedTransaction?.txid}
+                <Button href={`https://explorer.solana.com/tx/${signedTransaction?.transaction_signature}`} target='_blank'  sx={{color:'white'}}>
+                    {signedTransaction?.transaction_signature}
                 </Button>
             );
             enqueueSnackbar(`Transaction Confirmed`,{ variant: 'success', action:snackaction });
@@ -430,17 +430,18 @@ export function DriveView(props: any){
             const signedTransaction = await thisDrive.uploadMultipleFiles(storagePublicKey, files);
             //const signedTransaction = await thisDrive.uploadFile(storagePublicKey, files[0]);
             const latestBlockHash = await connection.getLatestBlockhash();
+            //console.log("TX: "+JSON.stringify(signedTransaction))
             await connection.confirmTransaction({
                 blockhash: latestBlockHash.blockhash,
                 lastValidBlockHeight: latestBlockHash.lastValidBlockHeight,
-                signature: signedTransaction.transaction_signature}, 
+                signature: signedTransaction[0].transaction_signature}, 
                 'max'
             );
             closeSnackbar(cnfrmkey);
-            console.log("TX: "+JSON.stringify(signedTransaction))
+            
             const snackaction = (key:any) => (
-                <Button href={`https://explorer.solana.com/tx/${signedTransaction.transaction_signature}`} target='_blank'  sx={{color:'white'}}>
-                    {signedTransaction.transaction_signature}
+                <Button href={`https://explorer.solana.com/tx/${signedTransaction[0].transaction_signature}`} target='_blank'  sx={{color:'white'}}>
+                    {signedTransaction[0].transaction_signature}
                 </Button>
             );
             enqueueSnackbar(`Transaction Confirmed`,{ variant: 'success', action:snackaction });
@@ -473,7 +474,6 @@ export function DriveView(props: any){
                 'max'
             );
             closeSnackbar(cnfrmkey);
-            console.log("TX: "+JSON.stringify(signedTransaction))
             const snackaction = (key:any) => (
                 <Button href={`https://explorer.solana.com/tx/${signedTransaction.transaction_signature}`} target='_blank'  sx={{color:'white'}}>
                     {signedTransaction.transaction_signature}
