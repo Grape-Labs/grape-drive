@@ -1082,8 +1082,22 @@ const deserialized = deserializeUnchecked(dataSchema, AccoundData, metavalue?.da
         const handleFileUpload = (e:any) => {
             //console.log(">> Checking: "+JSON.stringify(uploadFiles))
             if (uploadFiles){
-                console.log("Uploading file ("+JSON.stringify(uploadFiles)+")...")
-                uploadToStoragePool(uploadFiles, storageAccount.publicKey);
+                // check if file name already exists, if it does then do a file replacement
+                let found = false;
+                for (let file of uploadFiles){
+                    for (let cFile of currentFiles)
+                        if (file?.path === cFile){
+                            // found === true
+                            found = true;
+                        }
+                }
+                if (!found){
+                    console.log("Uploading file ("+JSON.stringify(uploadFiles)+")...")
+                    uploadToStoragePool(uploadFiles, storageAccount.publicKey);
+                } else{
+                    if (uploadFiles.length <= 0)
+                        uploadReplaceToStoragePool(uploadFiles, uploadFiles[0].path, new PublicKey(storageAccount.publicKey));
+                }
             }
         }
 
