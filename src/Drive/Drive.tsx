@@ -458,7 +458,7 @@ export function DriveView(props: any){
     
     const uploadReplaceToStoragePool = async (newFile: any, existingFileUrl: string, storagePublicKey: PublicKey) => { 
         try{
-            enqueueSnackbar(`Preparing to upload some files to ${storagePublicKey.toString()}`,{ variant: 'info' });
+            enqueueSnackbar(`Preparing to upload/replace some files to ${storagePublicKey.toString()}`,{ variant: 'info' });
             const snackprogress = (key:any) => (
                 <CircularProgress sx={{padding:'10px'}} />
             );
@@ -953,31 +953,29 @@ export function DriveView(props: any){
                 <ListItemText>
                     {file}
 
-                    <ButtonGroup size="small" variant="outlined" aria-label="outlined button group">
                         <CopyToClipboard 
                             text={`https://shdw-drive.genesysgo.net/${storageAccount.publicKey}/${file}`} 
                             onCopy={handleCopyClick}
                             >
-                            <Button sx={{color:'white'}} title="Copy" size="small">
+                            <Button sx={{color:'white',borderRadius:'17px'}} title="Copy" size="small">
                                 <ContentCopyIcon />
                             </Button>
                         </CopyToClipboard> 
 
                         <ReplaceFileFromStorage storageAccount={storageAccount} storageAccountFile={`https://shdw-drive.genesysgo.net/${storageAccount.publicKey}/${file}`} />
-
-                        <Button 
-                            sx={{color:'white'}} 
-                            component="a" 
-                            href={`https://shdw-drive.genesysgo.net/${storageAccount.publicKey}/${file}`}
-                            target="_blank"
-                            title="View"
-                        >   
-                                <OpenInNewIcon />
-                        </Button>
-                        <Button onClick={HandleDeleteStoragePoolFile} color="error" title="delete">
-                            <DeleteIcon />
-                        </Button>
-                    </ButtonGroup>
+                    
+                    <Button 
+                        sx={{color:'white',borderRadius:'17px'}} 
+                        href={`https://shdw-drive.genesysgo.net/${storageAccount.publicKey}/${file}`}
+                        target="_blank"
+                        title="View"
+                    >   
+                        <OpenInNewIcon />
+                    </Button>
+                    <Button onClick={HandleDeleteStoragePoolFile} color="error" title="delete" size="small" sx={{borderRadius:'17px'}} >
+                        <DeleteIcon />
+                    </Button>
+                    
 
                 </ListItemText>
             </ListItemButton>
@@ -1087,18 +1085,24 @@ const deserialized = deserializeUnchecked(dataSchema, AccoundData, metavalue?.da
                 // check if file name already exists, if it does then do a file replacement
                 let found = false;
                 for (let file of uploadFiles){
-                    for (let cFile of currentFiles)
+                    for (let cFile of currentFiles){
+                        console.log("comparing "+file?.path + " vs "+cFile)
                         if (file?.path === cFile){
                             // found === true
                             found = true;
                         }
+                    }
                 }
                 if (!found){
                     console.log("Uploading file ("+JSON.stringify(uploadFiles)+")...")
                     uploadToStoragePool(uploadFiles, storageAccount.publicKey);
                 } else{
-                    if (uploadFiles.length <= 0)
-                        uploadReplaceToStoragePool(uploadFiles, uploadFiles[0].path, new PublicKey(storageAccount.publicKey));
+                    console.log("FOUND!!! " +uploadFiles.length);
+                    if (uploadFiles.length <= 1){
+                        const path = `https://shdw-drive.genesysgo.net/${storageAccount.publicKey}/${uploadFiles[0].path}`;
+                        console.log("Replacing: "+path)
+                        uploadReplaceToStoragePool(uploadFiles[0], path, new PublicKey(storageAccount.publicKey));
+                    }
                 }
             }
         }
@@ -1202,15 +1206,15 @@ const deserialized = deserializeUnchecked(dataSchema, AccoundData, metavalue?.da
                             <Grid 
                                 item xs={12}
                             >   
-                                <ButtonGroup variant="outlined" aria-label="outlined primary button group">
+                                <ButtonGroup size="small" variant="outlined" aria-label="small outlined button group" sx={{ml:1, color:'white'}}>
                                     {!storageAccount.account.toBeDeleted &&
                                         <ResizeStoragePool storageAccount={storageAccount} />
                                     }
                                     {console.log(JSON.stringify(storageAccount))}
                                     {!storageAccount.account.immutable && !storageAccount.account.toBeDeleted ?
-                                            <Button onClick={HandleLockStoragePool} sx={{borderRadius:'17px'}}>
-                                                <LockOpenIcon sx={{mr:1}} /> Lock
-                                            </Button>
+                                        <Button onClick={HandleLockStoragePool} sx={{borderRadius:'17px'}}>
+                                            <LockOpenIcon sx={{mr:1}} /> Lock
+                                        </Button>
                                     :
                                         <Button sx={{borderRadius:'17px'}} disabled>
                                             <LockIcon sx={{mr:1}} /> Locked
@@ -1221,18 +1225,16 @@ const deserialized = deserializeUnchecked(dataSchema, AccoundData, metavalue?.da
                                             <DeleteIcon sx={{mr:1}} /> Delete
                                         </Button>
                                     :
-                                        <>
-                                            <Button onClick={HandleCancelDeleteStoragePool} color="warning" sx={{borderRadius:'17px'}}>
-                                                <RestoreIcon sx={{mr:1}} /> Restore
-                                            </Button>
-                                            {/*
-                                            <Button onClick={HandleClaimStake} color="warning" sx={{borderRadius:'17px'}}>
-                                                <DownloadIcon sx={{mr:1}} /> Claim Stake
-                                            </Button>
-                                            */}
-                                        </>
+                                        <Button onClick={HandleCancelDeleteStoragePool} color="warning" sx={{borderRadius:'17px'}}>
+                                            <RestoreIcon sx={{mr:1}} /> Restore
+                                        </Button>
                                     }
 
+                                    {/*
+                                    <Button onClick={HandleClaimStake} color="warning" sx={{borderRadius:'17px'}}>
+                                        <DownloadIcon sx={{mr:1}} /> Claim Stake
+                                    </Button>
+                                    */}
                                 </ButtonGroup>
                                 
                             </Grid>
