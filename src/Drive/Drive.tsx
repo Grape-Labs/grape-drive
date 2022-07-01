@@ -952,30 +952,33 @@ export function DriveView(props: any){
                 </ListItemIcon>
                 <ListItemText>
                     {file}
-                    <CopyToClipboard 
-                        text={`https://shdw-drive.genesysgo.net/${storageAccount.publicKey}/${file}`} 
-                        onCopy={handleCopyClick}
-                        >
-                        <Button sx={{borderRadius:'24px', color:'white'}} title="Copy" size="small">
-                            <ContentCopyIcon />
+
+                    <ButtonGroup variant="outlined" aria-label="outlined button group">
+                        <CopyToClipboard 
+                            text={`https://shdw-drive.genesysgo.net/${storageAccount.publicKey}/${file}`} 
+                            onCopy={handleCopyClick}
+                            >
+                            <Button sx={{borderRadius:'24px', color:'white'}} title="Copy" size="small">
+                                <ContentCopyIcon />
+                            </Button>
+                        </CopyToClipboard> 
+
+                        <ReplaceFileFromStorage storageAccount={storageAccount} storageAccountFile={`https://shdw-drive.genesysgo.net/${storageAccount.publicKey}/${file}`} />
+
+                        <Button 
+                            sx={{borderRadius:'24px', color:'white'}} 
+                            component="a" 
+                            href={`https://shdw-drive.genesysgo.net/${storageAccount.publicKey}/${file}`}
+                            target="_blank"
+                            title="View"
+                            size="small"
+                        >   
+                                <OpenInNewIcon />
                         </Button>
-                    </CopyToClipboard> 
-
-                    <ReplaceFileFromStorage storageAccount={storageAccount} storageAccountFile={`https://shdw-drive.genesysgo.net/${storageAccount.publicKey}/${file}`} />
-
-                    <Button 
-                        sx={{borderRadius:'24px', color:'white'}} 
-                        component="a" 
-                        href={`https://shdw-drive.genesysgo.net/${storageAccount.publicKey}/${file}`}
-                        target="_blank"
-                        title="View"
-                        size="small"
-                    >   
-                            <OpenInNewIcon />
-                    </Button>
-                    <Button onClick={HandleDeleteStoragePoolFile} color="error" sx={{borderRadius:'17px'}} title="delete" size="small">
-                        <DeleteIcon />
-                    </Button>
+                        <Button onClick={HandleDeleteStoragePoolFile} color="error" sx={{borderRadius:'17px'}} title="delete" size="small">
+                            <DeleteIcon />
+                        </Button>
+                    </ButtonGroup>
 
                 </ListItemText>
             </ListItemButton>
