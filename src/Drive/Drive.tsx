@@ -953,7 +953,7 @@ export function DriveView(props: any){
                 <ListItemText>
                     {file}
 
-                    <ButtonGroup variant="outlined" aria-label="outlined button group">
+                    <ButtonGroup size="small" variant="outlined" aria-label="outlined button group">
                         <CopyToClipboard 
                             text={`https://shdw-drive.genesysgo.net/${storageAccount.publicKey}/${file}`} 
                             onCopy={handleCopyClick}
