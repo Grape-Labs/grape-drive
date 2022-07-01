@@ -958,7 +958,7 @@ export function DriveView(props: any){
                             text={`https://shdw-drive.genesysgo.net/${storageAccount.publicKey}/${file}`} 
                             onCopy={handleCopyClick}
                             >
-                            <Button sx={{borderRadius:'24px', color:'white'}} title="Copy" size="small">
+                            <Button sx={{color:'white'}} title="Copy" size="small">
                                 <ContentCopyIcon />
                             </Button>
                         </CopyToClipboard> 
@@ -966,16 +966,15 @@ export function DriveView(props: any){
                         <ReplaceFileFromStorage storageAccount={storageAccount} storageAccountFile={`https://shdw-drive.genesysgo.net/${storageAccount.publicKey}/${file}`} />
 
                         <Button 
-                            sx={{borderRadius:'24px', color:'white'}} 
+                            sx={{color:'white'}} 
                             component="a" 
                             href={`https://shdw-drive.genesysgo.net/${storageAccount.publicKey}/${file}`}
                             target="_blank"
                             title="View"
-                            size="small"
                         >   
                                 <OpenInNewIcon />
                         </Button>
-                        <Button onClick={HandleDeleteStoragePoolFile} color="error" sx={{borderRadius:'17px'}} title="delete" size="small">
+                        <Button onClick={HandleDeleteStoragePoolFile} color="error" title="delete">
                             <DeleteIcon />
                         </Button>
                     </ButtonGroup>
