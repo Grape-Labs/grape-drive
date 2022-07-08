@@ -1024,7 +1024,7 @@ export function DriveView(props: any){
 
         const HandleDeleteStoragePoolFile = (event: any) => {
             event.preventDefault();
-            deleteStoragePoolFile(new PublicKey(storageAccount.publicKey), file, 'v2');
+            deleteStoragePoolFile(new PublicKey(storageAccount.publicKey), file, 'v'+version);
         };
 
         const handleFileReplacePopup = () => {
@@ -1064,11 +1064,11 @@ export function DriveView(props: any){
                     >   
                         <OpenInNewIcon />
                     </Button>
-                    {version !== 1 &&
-                        <Button onClick={HandleDeleteStoragePoolFile} color="error" title="delete" size="small" sx={{borderRadius:'17px'}} >
-                            <DeleteIcon />
-                        </Button>
-                    }
+                    
+                    <Button onClick={HandleDeleteStoragePoolFile} color="error" title="delete" size="small" sx={{borderRadius:'17px'}} >
+                        <DeleteIcon />
+                    </Button>
+                    
                     
 
                 </ListItemText>
@@ -1191,7 +1191,7 @@ const deserialized = deserializeUnchecked(dataSchema, AccoundData, metavalue?.da
                     if (uploadFiles.length <= 1){
                         const path = `https://shdw-drive.genesysgo.net/${storageAccount.publicKey}/${uploadFiles[0].path}`;
                         console.log("Replacing: "+path)
-                        uploadReplaceToStoragePool(uploadFiles[0], path, new PublicKey(storageAccount.publicKey), 'v2');
+                        uploadReplaceToStoragePool(uploadFiles[0], path, new PublicKey(storageAccount.publicKey), 'v'+version);
                     }
                 }
             }
@@ -1199,12 +1199,12 @@ const deserialized = deserializeUnchecked(dataSchema, AccoundData, metavalue?.da
 
         const HandleDeleteStoragePool = (event: any) => {
             event.preventDefault();
-            deleteStoragePool(new PublicKey(storageAccount.publicKey), 'v2');
+            deleteStoragePool(new PublicKey(storageAccount.publicKey), 'v'+version);
         };
 
         const HandleCancelDeleteStoragePool = (event: any) => {
             event.preventDefault();
-            cancelDeleteStoragePool(new PublicKey(storageAccount.publicKey), 'v2');
+            cancelDeleteStoragePool(new PublicKey(storageAccount.publicKey), 'v'+version);
         };
 
         const HandleMigrateStoragePool = (event: any) => {
@@ -1221,7 +1221,7 @@ const deserialized = deserializeUnchecked(dataSchema, AccoundData, metavalue?.da
 
         const HandleLockStoragePool = (event: any) => {
             event.preventDefault();
-            lockStoragePool(new PublicKey(storageAccount.publicKey), 'v2');
+            lockStoragePool(new PublicKey(storageAccount.publicKey), 'v'+version);
         };
 
 
