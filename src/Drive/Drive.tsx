@@ -1012,6 +1012,7 @@ export function DriveView(props: any){
     function FileItem(props: any){
         const storageAccount = props.storageAccount;
         const file = props.file;
+        const version = props.version;
         const [uploadFiles, setUploadFiles] = React.useState(null);
         const key = props.key;
         const [open, setOpen] = React.useState(false);
@@ -1052,9 +1053,9 @@ export function DriveView(props: any){
                                 <ContentCopyIcon />
                             </Button>
                         </CopyToClipboard> 
-
+                    {version !== 1 &&
                         <ReplaceFileFromStorage storageAccount={storageAccount} storageAccountFile={`https://shdw-drive.genesysgo.net/${storageAccount.publicKey}/${file}`} />
-                    
+                    }
                     <Button 
                         sx={{color:'white',borderRadius:'17px'}} 
                         href={`https://shdw-drive.genesysgo.net/${storageAccount.publicKey}/${file}`}
@@ -1063,9 +1064,11 @@ export function DriveView(props: any){
                     >   
                         <OpenInNewIcon />
                     </Button>
-                    <Button onClick={HandleDeleteStoragePoolFile} color="error" title="delete" size="small" sx={{borderRadius:'17px'}} >
-                        <DeleteIcon />
-                    </Button>
+                    {version !== 1 &&
+                        <Button onClick={HandleDeleteStoragePoolFile} color="error" title="delete" size="small" sx={{borderRadius:'17px'}} >
+                            <DeleteIcon />
+                        </Button>
+                    }
                     
 
                 </ListItemText>
@@ -1372,7 +1375,7 @@ const deserialized = deserializeUnchecked(dataSchema, AccoundData, metavalue?.da
                         </ListSubheader>
                         
                         {currentFiles && currentFiles.map((file: any, key: number) => (
-                            <FileItem storageAccount={storageAccount} file={file} />
+                            <FileItem storageAccount={storageAccount} file={file} version={version} />
                         ))}
 
                     </List>
