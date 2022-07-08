@@ -1,6 +1,6 @@
 {
     "name": "@grape-labs/grape-drive",
-    "version": "1.1.017",
+    "version": "1.1.018",
     "author": "Grape devDAO",
     "repository": "https://github.com/grape-labs/grape-drive",
     "license": "Apache-2.0",
@@ -41,7 +41,7 @@
         "@project-serum/anchor": "^0.18.2",
         "@project-serum/common": "^0.0.1-beta.3",
         "@react-native-async-storage/async-storage": "^1.15.17",
-        "@shadow-drive/sdk": "3.0.1",
+        "@shadow-drive/sdk": "3.0.4",
         "@solana/spl-token": "0.1.8",
         "@solana/spl-token-registry": "^0.2.4046",
         "@solana/spl-token-v2": "npm:@solana/spl-token@0.2.0",

@@ -302,21 +302,22 @@ export function DriveView(props: any){
             const cnfrmkey = enqueueSnackbar(`Confirming transaction`,{ variant: 'info', action:snackprogress, persist: true });
             
             const signedTransaction = await thisDrive.deleteFile(storagePublicKey, 'https://shdw-drive.genesysgo.net/'+storagePublicKey.toBase58()+'/'+file, version || 'v2');
-            console.log("storagePublicKey; "+JSON.stringify(storagePublicKey))
-            console.log("file; "+JSON.stringify(file))
             //const signedTransaction = await thisDrive.deleteFile(storagePublicKey, 'https://shdw-drive.genesysgo.net/'+storagePublicKey.toBase58()+'/'+file);
             console.log("signedTransaction; "+JSON.stringify(signedTransaction))
             const latestBlockHash = await connection.getLatestBlockhash();
+            /*
             await connection.confirmTransaction({
                 blockhash: latestBlockHash.blockhash,
                 lastValidBlockHeight: latestBlockHash.lastValidBlockHeight,
                 signature: signedTransaction.txid}, 
                 'processed'
             );
+            
+            */
             closeSnackbar(cnfrmkey);
             const snackaction = (key:any) => (
                 <Button href={`https://explorer.solana.com/tx/${signedTransaction.txid}`} target='_blank'  sx={{color:'white'}}>
-                    {signedTransaction.txid}
+                    {signedTransaction.message}
                 </Button>
             );
             enqueueSnackbar(`Transaction Confirmed`,{ variant: 'success', action:snackaction });
@@ -1172,7 +1173,7 @@ const deserialized = deserializeUnchecked(dataSchema, AccoundData, metavalue?.da
                 let found = false;
                 for (let file of uploadFiles){
                     for (let cFile of currentFiles){
-                        console.log("comparing "+file?.path + " vs "+cFile)
+                        //console.log("comparing "+file?.path + " vs "+cFile)
                         if (file?.path === cFile){
                             // found === true
                             found = true;
@@ -1187,7 +1188,7 @@ const deserialized = deserializeUnchecked(dataSchema, AccoundData, metavalue?.da
                     if (uploadFiles.length <= 1){
                         const path = `https://shdw-drive.genesysgo.net/${storageAccount.publicKey}/${uploadFiles[0].path}`;
                         console.log("Replacing: "+path)
-                        uploadReplaceToStoragePool(uploadFiles[0], path, new PublicKey(storageAccount.publicKey), version);
+                        uploadReplaceToStoragePool(uploadFiles[0], path, new PublicKey(storageAccount.publicKey), 'v'+version);
                     }
                 }
             }
