@@ -1276,7 +1276,7 @@ const deserialized = deserializeUnchecked(dataSchema, AccoundData, metavalue?.da
                                     {`${storageAccount.publicKey}`}
                                 </Typography>
                             </Paper>
-                            {!storageAccount.account.toBeDeleted &&
+                            {!storageAccount.account.toBeDeleted && version !== 1 &&
                                 <>
                                     <Grid 
                                         item xs={12}

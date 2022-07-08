@@ -19,7 +19,7 @@ import { useWallet } from '@solana/wallet-adapter-react';
 
 //import {    ChatButton,Inbox as DialectInbox, } from '@dialectlabs/react-ui';
 //import { BottomChat as DialectBottomChat, DialectUiManagementProvider } from '@dialectlabs/react-ui';
-import { getDialectVariables, GRAPE_BOTTOM_CHAT_ID } from '../utils/grapeTools/ui-contants';
+//import { getDialectVariables, GRAPE_BOTTOM_CHAT_ID } from '../utils/grapeTools/ui-contants';
 import { ClassNames } from '@emotion/react';
 
 import { 
