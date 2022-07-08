@@ -300,7 +300,7 @@ export function DriveView(props: any){
             );
             //console.log(storagePublicKey + "/"+storageAccount+" - file: "+file);
             const cnfrmkey = enqueueSnackbar(`Confirming transaction`,{ variant: 'info', action:snackprogress, persist: true });
-
+            
             const signedTransaction = await thisDrive.deleteFile(storagePublicKey, 'https://shdw-drive.genesysgo.net/'+storagePublicKey.toBase58()+'/'+file, version || 'v2');
             console.log("storagePublicKey; "+JSON.stringify(storagePublicKey))
             console.log("file; "+JSON.stringify(file))
@@ -1053,9 +1053,7 @@ export function DriveView(props: any){
                                 <ContentCopyIcon />
                             </Button>
                         </CopyToClipboard> 
-                    {version !== 1 &&
                         <ReplaceFileFromStorage storageAccount={storageAccount} storageAccountFile={`https://shdw-drive.genesysgo.net/${storageAccount.publicKey}/${file}`} />
-                    }
                     <Button 
                         sx={{color:'white',borderRadius:'17px'}} 
                         href={`https://shdw-drive.genesysgo.net/${storageAccount.publicKey}/${file}`}
@@ -1068,9 +1066,7 @@ export function DriveView(props: any){
                     <Button onClick={HandleDeleteStoragePoolFile} color="error" title="delete" size="small" sx={{borderRadius:'17px'}} >
                         <DeleteIcon />
                     </Button>
-                    
-                    
-
+                
                 </ListItemText>
             </ListItemButton>
         )
@@ -1080,7 +1076,7 @@ export function DriveView(props: any){
     function RenderStorage(props: any){
         const account = props.account;
         const version = props.version;
-
+        
         return (
             <>
             {account
@@ -1191,7 +1187,7 @@ const deserialized = deserializeUnchecked(dataSchema, AccoundData, metavalue?.da
                     if (uploadFiles.length <= 1){
                         const path = `https://shdw-drive.genesysgo.net/${storageAccount.publicKey}/${uploadFiles[0].path}`;
                         console.log("Replacing: "+path)
-                        uploadReplaceToStoragePool(uploadFiles[0], path, new PublicKey(storageAccount.publicKey), 'v'+version);
+                        uploadReplaceToStoragePool(uploadFiles[0], path, new PublicKey(storageAccount.publicKey), version);
                     }
                 }
             }
@@ -1247,7 +1243,7 @@ const deserialized = deserializeUnchecked(dataSchema, AccoundData, metavalue?.da
                                 </del>
                             :
                                 <>
-                                    {`${storageAccount.account.identifier}`} 
+                                    {`${storageAccount.account.identifier}`}
                                 </>
                             }
                         </Typography>
@@ -1276,10 +1272,10 @@ const deserialized = deserializeUnchecked(dataSchema, AccoundData, metavalue?.da
                                 sx={{p:0,background:'#000', borderRadius:'17px'}}
                             >
                                 <Typography variant="caption">
-                                    {`${storageAccount.publicKey}`}
+                                    {`${storageAccount.publicKey}`} v{version}
                                 </Typography>
                             </Paper>
-                            {!storageAccount.account.toBeDeleted && version !== 1 &&
+                            {!storageAccount.account.toBeDeleted && 
                                 <>
                                     <Grid 
                                         item xs={12}
@@ -1309,7 +1305,6 @@ const deserialized = deserializeUnchecked(dataSchema, AccoundData, metavalue?.da
                                 item xs={12}
                             >   
                                 <ButtonGroup size="small" variant="outlined" aria-label="small outlined button group" sx={{ml:1, color:'white'}}>
-                                    {version === 2 && 
                                     <>
                                         {!storageAccount.account.toBeDeleted &&
                                             <ResizeStoragePool storageAccount={storageAccount} />
@@ -1333,7 +1328,7 @@ const deserialized = deserializeUnchecked(dataSchema, AccoundData, metavalue?.da
                                                 <RestoreIcon sx={{mr:1}} /> Restore
                                             </Button>
                                         }
-                                    </>}
+                                    </>
 
                                     {/*
                                     <Button onClick={HandleClaimStake} color="warning" sx={{borderRadius:'17px'}}>
@@ -1348,7 +1343,6 @@ const deserialized = deserializeUnchecked(dataSchema, AccoundData, metavalue?.da
                                     >
                                         <Button
                                             variant='outlined'
-                                            disabled={true}
                                             onClick={HandleMigrateStoragePool} color="warning" sx={{borderRadius:'17px'}}
                                         >
                                             Migrate to v2
@@ -1440,7 +1434,7 @@ const deserialized = deserializeUnchecked(dataSchema, AccoundData, metavalue?.da
                                         
                                         </>
                                     }>
-                                    <RenderStorage account={accountV2} vesion={2} />
+                                    <RenderStorage account={accountV2} version={2} />
                                 </List>
                             :
                                 <>
