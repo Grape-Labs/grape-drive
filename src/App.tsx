@@ -19,8 +19,8 @@ import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react
 import { WalletAdapterNetwork } from '@solana/wallet-adapter-base';
 import { Helmet } from 'react-helmet';
 
-import './dialect.css';
-import { DialectUiManagementProvider } from '@dialectlabs/react-ui';
+//import './dialect.css';
+//import { DialectUiManagementProvider } from '@dialectlabs/react-ui';
 
 import { useTranslation } from 'react-i18next';
 

@@ -16,12 +16,9 @@ import Snackbar, { SnackbarOrigin } from '@mui/material/Snackbar';
 import { PublicKey } from '@solana/web3.js';
 import { useWallet } from '@solana/wallet-adapter-react';
 //import '@dialectlabs/react-ui/lib/index.css';
-import {
-    ChatButton,
-    Inbox as DialectInbox, 
-  } from '@dialectlabs/react-ui';
 
-import { BottomChat as DialectBottomChat, DialectUiManagementProvider } from '@dialectlabs/react-ui';
+//import {    ChatButton,Inbox as DialectInbox, } from '@dialectlabs/react-ui';
+//import { BottomChat as DialectBottomChat, DialectUiManagementProvider } from '@dialectlabs/react-ui';
 import { getDialectVariables, GRAPE_BOTTOM_CHAT_ID } from '../utils/grapeTools/ui-contants';
 import { ClassNames } from '@emotion/react';
 
@@ -206,6 +203,8 @@ export function Header(props: any) {
 
         return (
             publicKey && (
+                <>
+                {/*
                 <DialectUiManagementProvider>
                     <ChatButton
                         wallet={wallet}
@@ -215,6 +214,8 @@ export function Header(props: any) {
                         theme={theme}
                         />
                 </DialectUiManagementProvider>
+                */}
+                </>
             )
         );
     }

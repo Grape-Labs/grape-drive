@@ -32,10 +32,9 @@
         "react": "^17.0.0 || ^18.0.0"
     },
     "dependencies": {
-        "@dialectlabs/react": "^0.5.4",
-        "@dialectlabs/react-ui": "0.9.2",
         "@emotion/react": "^11.4.1",
         "@emotion/styled": "^11.8.1",
+        "@metaplex-foundation/mpl-core": "^0.6.1",
         "@mui/icons-material": "^5.0.0",
         "@mui/lab": "^5.0.0-alpha.89",
         "@mui/material": "^5.8.7",
@@ -43,8 +42,9 @@
         "@project-serum/common": "^0.0.1-beta.3",
         "@react-native-async-storage/async-storage": "^1.15.17",
         "@shadow-drive/sdk": "3.0.1",
-        "@solana/spl-token": "^0.2.0",
+        "@solana/spl-token": "0.1.8",
         "@solana/spl-token-registry": "^0.2.4046",
+        "@solana/spl-token-v2": "npm:@solana/spl-token@0.2.0",
         "@solana/wallet-adapter-base": "^0.9.5",
         "@solana/wallet-adapter-material-ui": "^0.16.5",
         "@solana/wallet-adapter-react": "^0.15.4",

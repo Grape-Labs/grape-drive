@@ -1,10 +1,11 @@
 import { ClassNamesContent } from '@emotion/react';
-import { defaultVariables, IncomingThemeVariables } from '@dialectlabs/react-ui';
+//import { defaultVariables, IncomingThemeVariables } from '@dialectlabs/react-ui';
 import theme from '../config/theme';
 
 export const GRAPE_BOTTOM_CHAT_ID = 'grape-bottom-chat';
 export const GRAPE_INBOX_ID = 'grape-inbox';
 
+/*
 export const getDialectVariables = (
     css: ClassNamesContent['css'],
     type: 'popup' | 'inbox' = 'inbox'
@@ -63,3 +64,4 @@ export const getDialectVariables = (
         })}`,
     },
 });
+*/
