@@ -19,6 +19,9 @@ import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react
 import { WalletAdapterNetwork } from '@solana/wallet-adapter-base';
 import { Helmet } from 'react-helmet';
 
+import './dialect.css';
+import { DialectUiManagementProvider } from '@dialectlabs/react-ui';
+
 import { useTranslation } from 'react-i18next';
 
 import {
@@ -98,6 +101,7 @@ function DashboardContent() {
   return (
     <>
       <Suspense fallback="loading">
+        <>
           <ThemeProvider theme={grapeTheme}>
               <div className="grape-gradient-background">
               <SnackbarProvider>
@@ -146,6 +150,7 @@ function DashboardContent() {
               </SnackbarProvider>
               </div>
           </ThemeProvider>
+          </>
         </Suspense>
     </>
   );

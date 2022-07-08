@@ -16,21 +16,14 @@ import Snackbar, { SnackbarOrigin } from '@mui/material/Snackbar';
 import { PublicKey } from '@solana/web3.js';
 import { useWallet } from '@solana/wallet-adapter-react';
 //import '@dialectlabs/react-ui/lib/index.css';
-import '../dialect.css';
 import {
     ChatButton,
-    NotificationsButton,
-    IncomingThemeVariables,
-    defaultVariables,
     Inbox as DialectInbox, 
-    ThemeProvider
   } from '@dialectlabs/react-ui';
-import {
-    ApiProvider,
-    connected,
-    DialectProvider,
-    useApi,
-} from '@dialectlabs/react';
+
+import { BottomChat as DialectBottomChat, DialectUiManagementProvider } from '@dialectlabs/react-ui';
+import { getDialectVariables, GRAPE_BOTTOM_CHAT_ID } from '../utils/grapeTools/ui-contants';
+import { ClassNames } from '@emotion/react';
 
 import { 
     MARKET_LOGO
@@ -149,12 +142,8 @@ export function Header(props: any) {
     //const currPath = location?.pathname ?? "";
     const { enqueueSnackbar } = useSnackbar();
 
-    const wallet = useWallet();
     const theme: 'dark' | 'light' = 'dark';
-    //const YOUR_PROJECT_PUBLIC_KEY = new PublicKey(AUCTION_HOUSE_ADDRESS);
-    const DIALECT_PUBLIC_KEY = new PublicKey(
-        'D2pyBevYb6dit1oCx6e8vCxFK9mBeYCRe8TTntk2Tm98'
-    );
+    //const DIALECT_PUBLIC_KEY = new PublicKey('D2pyBevYb6dit1oCx6e8vCxFK9mBeYCRe8TTntk2Tm98');
     
     const routes = [
         { name: "Home", path: "/" },
@@ -209,6 +198,56 @@ export function Header(props: any) {
         handleMenuClose();
         //setSnackbarState(true);
     };
+    
+    function HeaderChat() {
+        const wallet = useWallet();
+        const { publicKey } = wallet;
+        const theme: 'dark' | 'light' = 'dark';
+
+        return (
+            publicKey && (
+                <DialectUiManagementProvider>
+                    <ChatButton
+                        wallet={wallet}
+                        dialectId="header-chat-button"
+                        network={'mainnet'}
+                        rpcUrl={GRAPE_RPC_ENDPOINT}
+                        theme={theme}
+                        />
+                </DialectUiManagementProvider>
+            )
+        );
+    }
+    
+    /*
+    function BottomChat() {
+        const wallet = useWallet();
+        const { publicKey } = wallet;
+    
+        return (
+            publicKey && (
+                <ClassNames>
+                    {({ css }) => (
+                        <Container
+                            sx={{
+                                zIndex: 'tooltip',
+                            }}
+                        >
+                            <DialectBottomChat
+                                dialectId={GRAPE_BOTTOM_CHAT_ID}
+                                wallet={wallet}
+                                rpcUrl={GRAPE_RPC_ENDPOINT}
+                                theme="dark"
+                                network="mainnet"
+                                variables={getDialectVariables(css, 'popup')}
+                            />
+                        </Container>
+                    )}
+                </ClassNames>
+            )
+        );
+    }
+    */
 
     const { t, i18n } = useTranslation();
 
@@ -265,9 +304,7 @@ export function Header(props: any) {
                 </Button>
                 <Tooltip title={`Back to the Dashboard`}><IconButton sx={{borderRadius:'17px'}} component="a" href='https://verify.grapes.network'><DashboardOutlinedIcon/></IconButton></Tooltip>
             </Box>
-            <div className="grape-dialect">
-            <ChatButton wallet={wallet} network={'mainnet'} theme={theme} rpcUrl={GRAPE_RPC_ENDPOINT} bellClassName='grape-chat' />
-            </div>
+            <HeaderChat />
             <div className="grape-wallet-adapter">
                 <WalletDialogProvider className="grape-wallet-provider">
                     <WalletMultiButton className="grape-wallet-button" />

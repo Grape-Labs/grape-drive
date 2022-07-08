@@ -19,7 +19,6 @@ import { useTranslation } from 'react-i18next';
 import moment from 'moment';
 
 import { 
-    MARKET_LOGO,
     GRAPE_RPC_ENDPOINT
 } from '../utils/grapeTools/constants';
 
@@ -118,15 +117,23 @@ function formatBytes(bytes: any, decimals = 2) {
 }
 
 function calculateStorageUsed(available: any, allocated: any){
-    const percentage = 100-(+available.toNumber()/+allocated.toNumber()*100);
-    const storage_string = percentage.toFixed(2) + "% of " + formatBytes(allocated);
-    return storage_string;
+    if (available && +available > 0){
+        const percentage = 100-(+available.toNumber()/+allocated.toNumber()*100);
+        const storage_string = percentage.toFixed(2) + "% of " + formatBytes(allocated);
+        return storage_string;
+    } else{
+        const storage_string = "0% of " + formatBytes(allocated);
+        return storage_string;
+    }
+    
+    
 }
 
 export function DriveView(props: any){
 	const { connection } = useConnection();
 	const wallet = useWallet();
-	const [account, setAccount] = React.useState(null);
+	const [accountV1, setAccountV1] = React.useState(null);
+	const [accountV2, setAccountV2] = React.useState(null);
     const [loading, setLoading] = React.useState(false);
     const [thisDrive, setThisDrive] = React.useState(null);
 
@@ -144,18 +151,21 @@ export function DriveView(props: any){
     );
 
     const fetchStorageAccounts = async () => { 
-        const storedAccount = await thisDrive.getStorageAccounts();
-        setAccount(storedAccount);
+        const storedAccount = await thisDrive.getStorageAccounts('v2');
+        setAccountV2(storedAccount);
+        const storedAccountV1 = await thisDrive.getStorageAccounts('v1');
+        setAccountV1(storedAccountV1);
     }
 
-    const createStoragePool = async (name: string, size: string) => { 
+    const createStoragePool = async (name: string, size: string, version: string) => { 
         try{
             enqueueSnackbar(`Preparing to create storage ${name}`,{ variant: 'info' });
             const snackprogress = (key:any) => (
                 <CircularProgress sx={{padding:'10px'}} />
             );
             const cnfrmkey = enqueueSnackbar(`Confirming transaction`,{ variant: 'info', action:snackprogress, persist: true });
-            const signedTransaction = await thisDrive.createStorageAccount(name, size)
+            const signedTransaction = await thisDrive.createStorageAccount(name, size, version || 'v2')
+            //const signedTransaction = await thisDrive.createStorageAccount(name, size)
             const latestBlockHash = await connection.getLatestBlockhash();
             await connection.confirmTransaction({
                 blockhash: latestBlockHash.blockhash,
@@ -181,14 +191,47 @@ export function DriveView(props: any){
         } 
     }
 
-    const cancelDeleteStoragePool = async (storagePublicKey: PublicKey) => { 
+    const migrateStoragePool = async (storagePublicKey: PublicKey) => { 
+        try{
+            enqueueSnackbar(`Preparing to migrate storage pool ${storagePublicKey.toString()}`,{ variant: 'info' });
+            const snackprogress = (key:any) => (
+                <CircularProgress sx={{padding:'10px'}} />
+            );
+            const cnfrmkey = enqueueSnackbar(`Confirming transaction`,{ variant: 'info', action:snackprogress, persist: true });
+            const signedTransaction = await thisDrive.migrate(storagePublicKey);
+            const latestBlockHash = await connection.getLatestBlockhash();
+            await connection.confirmTransaction({
+                blockhash: latestBlockHash.blockhash,
+                lastValidBlockHeight: latestBlockHash.lastValidBlockHeight,
+                signature: signedTransaction.txid}, 
+                'processed'
+            );
+            closeSnackbar(cnfrmkey);
+            const snackaction = (key:any) => (
+                <Button href={`https://explorer.solana.com/tx/${signedTransaction.txid}`} target='_blank'  sx={{color:'white'}}>
+                    {signedTransaction.txid}
+                </Button>
+            );
+            enqueueSnackbar(`Transaction Confirmed`,{ variant: 'success', action:snackaction });
+            setTimeout(function() {
+                fetchStorageAccounts();
+            }, 2000);
+        }catch(e){
+            closeSnackbar();
+            enqueueSnackbar(`${e}`,{ variant: 'error' });
+            console.log("Error: "+e);
+            //console.log("Error: "+JSON.stringify(e));
+        } 
+    }
+
+    const cancelDeleteStoragePool = async (storagePublicKey: PublicKey, version: string) => { 
         try{
             enqueueSnackbar(`Preparing to delete storage ${storagePublicKey.toString()}`,{ variant: 'info' });
             const snackprogress = (key:any) => (
                 <CircularProgress sx={{padding:'10px'}} />
             );
             const cnfrmkey = enqueueSnackbar(`Confirming transaction`,{ variant: 'info', action:snackprogress, persist: true });
-            const signedTransaction = await thisDrive.cancelDeleteStorageAccount(storagePublicKey);
+            const signedTransaction = await thisDrive.cancelDeleteStorageAccount(storagePublicKey, version || 'v2');
             const latestBlockHash = await connection.getLatestBlockhash();
             await connection.confirmTransaction({
                 blockhash: latestBlockHash.blockhash,
@@ -249,7 +292,7 @@ export function DriveView(props: any){
         } 
     }
     
-    const deleteStoragePoolFile = async (storagePublicKey: PublicKey, file: string) => { 
+    const deleteStoragePoolFile = async (storagePublicKey: PublicKey, file: string, version: string) => { 
         try{
             enqueueSnackbar(`Preparing to delete ${file}`,{ variant: 'info' });
             const snackprogress = (key:any) => (
@@ -257,7 +300,12 @@ export function DriveView(props: any){
             );
             //console.log(storagePublicKey + "/"+storageAccount+" - file: "+file);
             const cnfrmkey = enqueueSnackbar(`Confirming transaction`,{ variant: 'info', action:snackprogress, persist: true });
-            const signedTransaction = await thisDrive.deleteFile(storagePublicKey, 'https://shdw-drive.genesysgo.net/'+storagePublicKey.toBase58()+'/'+file);
+
+            const signedTransaction = await thisDrive.deleteFile(storagePublicKey, 'https://shdw-drive.genesysgo.net/'+storagePublicKey.toBase58()+'/'+file, version || 'v2');
+            console.log("storagePublicKey; "+JSON.stringify(storagePublicKey))
+            console.log("file; "+JSON.stringify(file))
+            //const signedTransaction = await thisDrive.deleteFile(storagePublicKey, 'https://shdw-drive.genesysgo.net/'+storagePublicKey.toBase58()+'/'+file);
+            console.log("signedTransaction; "+JSON.stringify(signedTransaction))
             const latestBlockHash = await connection.getLatestBlockhash();
             await connection.confirmTransaction({
                 blockhash: latestBlockHash.blockhash,
@@ -285,14 +333,15 @@ export function DriveView(props: any){
         } 
     }
 
-    const resizeAddStoragePool = async (storagePublicKey: PublicKey, size: string) => { 
+    const resizeAddStoragePool = async (storagePublicKey: PublicKey, size: string, version: string) => { 
         try{
             enqueueSnackbar(`Preparing to resize/add storage ${storagePublicKey.toString()}`,{ variant: 'info' });
             const snackprogress = (key:any) => (
                 <CircularProgress sx={{padding:'10px'}} />
             );
             const cnfrmkey = enqueueSnackbar(`Confirming transaction`,{ variant: 'info', action:snackprogress, persist: true });
-            const signedTransaction = await thisDrive.addStorage(storagePublicKey, size);
+            const signedTransaction = await thisDrive.addStorage(storagePublicKey, size, version || 'v2');
+            //const signedTransaction = await thisDrive.addStorage(storagePublicKey, size);
             const latestBlockHash = await connection.getLatestBlockhash();
             await connection.confirmTransaction({
                 blockhash: latestBlockHash.blockhash,
@@ -319,14 +368,14 @@ export function DriveView(props: any){
         } 
     }
 
-    const resizeReduceStoragePool = async (storagePublicKey: PublicKey, size: string) => { 
+    const resizeReduceStoragePool = async (storagePublicKey: PublicKey, size: string, version: string) => { 
         try{
             enqueueSnackbar(`Preparing to resize/reduce storage ${storagePublicKey.toString()}`,{ variant: 'info' });
             const snackprogress = (key:any) => (
                 <CircularProgress sx={{padding:'10px'}} />
             );
             const cnfrmkey = enqueueSnackbar(`Confirming transaction`,{ variant: 'info', action:snackprogress, persist: true });
-            const signedTransaction = await thisDrive.reduceStorage(storagePublicKey, size);
+            const signedTransaction = await thisDrive.reduceStorage(storagePublicKey, size, version || 'v2');
             const latestBlockHash = await connection.getLatestBlockhash();
             await connection.confirmTransaction({
                 blockhash: latestBlockHash.blockhash,
@@ -353,14 +402,15 @@ export function DriveView(props: any){
         } 
     }
 
-    const deleteStoragePool = async (storagePublicKey: PublicKey) => { 
+    const deleteStoragePool = async (storagePublicKey: PublicKey, version: string) => { 
         try{
             enqueueSnackbar(`Preparing to delete storage ${storagePublicKey.toString()}`,{ variant: 'info' });
             const snackprogress = (key:any) => (
                 <CircularProgress sx={{padding:'10px'}} />
             );
             const cnfrmkey = enqueueSnackbar(`Confirming transaction`,{ variant: 'info', action:snackprogress, persist: true });
-            const signedTransaction = await thisDrive.deleteStorageAccount(storagePublicKey);
+            const signedTransaction = await thisDrive.deleteStorageAccount(storagePublicKey, version || 'v2');
+            //const signedTransaction = await thisDrive.deleteStorageAccount(storagePublicKey);
             const latestBlockHash = await connection.getLatestBlockhash();
             await connection.confirmTransaction({
                 blockhash: latestBlockHash.blockhash,
@@ -387,14 +437,14 @@ export function DriveView(props: any){
         } 
     }
 
-    const lockStoragePool = async (storagePublicKey: PublicKey) => { 
+    const lockStoragePool = async (storagePublicKey: PublicKey, version: string) => { 
         try{
             enqueueSnackbar(`Preparing to lock storage ${storagePublicKey.toString()}`,{ variant: 'info' });
             const snackprogress = (key:any) => (
                 <CircularProgress sx={{padding:'10px'}} />
             );
             const cnfrmkey = enqueueSnackbar(`Confirming transaction`,{ variant: 'info', action:snackprogress, persist: true });
-            const signedTransaction = await thisDrive.makeStorageImmutable(storagePublicKey);
+            const signedTransaction = await thisDrive.makeStorageImmutable(storagePublicKey, version || 'v2');
             const latestBlockHash = await connection.getLatestBlockhash();
             await connection.confirmTransaction({
                 blockhash: latestBlockHash.blockhash,
@@ -429,14 +479,33 @@ export function DriveView(props: any){
             const cnfrmkey = enqueueSnackbar(`Confirming transaction`,{ variant: 'info', action:snackprogress, persist: true });
             const signedTransaction = await thisDrive.uploadMultipleFiles(storagePublicKey, files);
             //const signedTransaction = await thisDrive.uploadFile(storagePublicKey, files[0]);
+            
+            let count = 0;
+            for (var file of signedTransaction){
+                if (file.status === "Uploaded."){
+                    count++;
+                }
+            }
+            
+            closeSnackbar(cnfrmkey);
+            const snackaction = (key:any) => (
+                <>
+                    Uploaded {count} files
+                </>
+            );
+            enqueueSnackbar(`Transaction Confirmed`,{ variant: 'success', action:snackaction });
+
+            /*
             const latestBlockHash = await connection.getLatestBlockhash();
-            //console.log("TX: "+JSON.stringify(signedTransaction))
+
+            console.log("TX: "+JSON.stringify(signedTransaction))
             await connection.confirmTransaction({
                 blockhash: latestBlockHash.blockhash,
                 lastValidBlockHeight: latestBlockHash.lastValidBlockHeight,
-                signature: signedTransaction[0].transaction_signature}, 
+                signature: signedTransaction}, 
                 'max'
             );
+            
             closeSnackbar(cnfrmkey);
             
             const snackaction = (key:any) => (
@@ -445,6 +514,9 @@ export function DriveView(props: any){
                 </Button>
             );
             enqueueSnackbar(`Transaction Confirmed`,{ variant: 'success', action:snackaction });
+            
+            */
+
             setTimeout(function() {
                 fetchStorageAccounts();
             }, 2000);
@@ -456,17 +528,29 @@ export function DriveView(props: any){
         } 
     }
     
-    const uploadReplaceToStoragePool = async (newFile: any, existingFileUrl: string, storagePublicKey: PublicKey) => { 
+    const uploadReplaceToStoragePool = async (newFile: any, existingFileUrl: string, storagePublicKey: PublicKey, version: string) => { 
         try{
             enqueueSnackbar(`Preparing to upload/replace some files to ${storagePublicKey.toString()}`,{ variant: 'info' });
             const snackprogress = (key:any) => (
                 <CircularProgress sx={{padding:'10px'}} />
             );
             const cnfrmkey = enqueueSnackbar(`Confirming transaction`,{ variant: 'info', action:snackprogress, persist: true });
-            const signedTransaction = await thisDrive.editFile(new PublicKey(storagePublicKey), existingFileUrl, newFile);
-            //const signedTransaction = await thisDrive.uploadFile(storagePublicKey, files[0]);
-            //await connection.confirmTransaction(signedTransaction.transaction_signature, 'max');
+            const signedTransaction = await thisDrive.editFile(new PublicKey(storagePublicKey), existingFileUrl, newFile, version || 'v2');
+            //const signedTransaction = await thisDrive.editFile(new PublicKey(storagePublicKey), existingFileUrl, newFile);
             const latestBlockHash = await connection.getLatestBlockhash();
+            
+            if (signedTransaction?.finalized_location){
+                closeSnackbar(cnfrmkey);
+                const snackaction = (key:any) => (
+                    <Button>
+                        File replaced
+                    </Button>
+                );
+                enqueueSnackbar(`Transaction Confirmed`,{ variant: 'success', action:snackaction });
+            } else{
+
+            }
+            /*
             await connection.confirmTransaction({
                 blockhash: latestBlockHash.blockhash,
                 lastValidBlockHeight: latestBlockHash.lastValidBlockHeight,
@@ -479,7 +563,9 @@ export function DriveView(props: any){
                     {signedTransaction.transaction_signature}
                 </Button>
             );
+            
             enqueueSnackbar(`Transaction Confirmed`,{ variant: 'success', action:snackaction });
+            */
             setTimeout(function() {
                 // IMPORTNAT: change to update / fetch only this account files
                 fetchStorageAccounts();
@@ -543,14 +629,19 @@ export function DriveView(props: any){
 				const drive = await new ShdwDrive(new Connection(GRAPE_RPC_ENDPOINT), wallet).init();
                 //console.log("drive: "+JSON.stringify(drive));
                 setThisDrive(drive);
-                const asa = await drive.getStorageAccounts(); // .getStorageAccount(wallet.publicKey);
+                //const asa = await drive.getStorageAccounts();
+                const asa_v1 = await drive.getStorageAccounts('v1');
+                const asa_v2 = await drive.getStorageAccounts('v2');
                 //console.log("all storage accounts: "+JSON.stringify(asa))
                 
-                if (asa){
-                    setAccount(asa);
+                if (asa_v2){
+                    setAccountV2(asa_v2);
                 } else{
                     //createStoragePool('grape-test-storage', '1MB');
                 }
+
+                if (asa_v1)
+                    setAccountV1(asa_v1);
 
                 setLoading(false);
 			}
@@ -586,7 +677,7 @@ export function DriveView(props: any){
             event.preventDefault();
             if (thisDrive && storageLabel && storageSizeUnits && storageSize){
                 setOpen(false);
-                createStoragePool(storageLabel, storageSize+storageSizeUnits);
+                createStoragePool(storageLabel, storageSize+storageSizeUnits, 'v2');
             }
         };
 
@@ -720,7 +811,7 @@ export function DriveView(props: any){
 
         const HandleAllocateReplaceFile = (event: any) => {
             event.preventDefault();
-            uploadReplaceToStoragePool(uploadFile, storageAccountFile, new PublicKey(storageAccount.publicKey));
+            uploadReplaceToStoragePool(uploadFile, storageAccountFile, new PublicKey(storageAccount.publicKey), 'v2');
             setOpen(false);
         };
 
@@ -729,7 +820,7 @@ export function DriveView(props: any){
             //console.log(">> Checking: "+JSON.stringify(uploadFile))
             if (uploadFile){
                 console.log("Uploading file ("+JSON.stringify(uploadFile)+")...")
-                uploadReplaceToStoragePool(uploadFile[0], storageAccountFile, new PublicKey(storageAccount.publicKey));
+                uploadReplaceToStoragePool(uploadFile[0], storageAccountFile, new PublicKey(storageAccount.publicKey), 'v2');
                 setOpen(false);
             }
         }
@@ -814,9 +905,9 @@ export function DriveView(props: any){
                 setOpen(false);
                 
                 if (add === "1")
-                    resizeAddStoragePool(new PublicKey(storageAccount.publicKey), storageSize+storageSizeUnits)
+                    resizeAddStoragePool(new PublicKey(storageAccount.publicKey), storageSize+storageSizeUnits, 'v2')
                 else
-                    resizeReduceStoragePool(new PublicKey(storageAccount.publicKey), storageSize+storageSizeUnits)
+                    resizeReduceStoragePool(new PublicKey(storageAccount.publicKey), storageSize+storageSizeUnits, 'v2')
             }
         };
 
@@ -932,7 +1023,7 @@ export function DriveView(props: any){
 
         const HandleDeleteStoragePoolFile = (event: any) => {
             event.preventDefault();
-            deleteStoragePoolFile(new PublicKey(storageAccount.publicKey), file);
+            deleteStoragePoolFile(new PublicKey(storageAccount.publicKey), file, 'v2');
         };
 
         const handleFileReplacePopup = () => {
@@ -985,13 +1076,14 @@ export function DriveView(props: any){
 
     function RenderStorage(props: any){
         const account = props.account;
+        const version = props.version;
 
         return (
             <>
             {account
             .sort((a:any, b:any) => a.account.creationTime < b.account.creationTime ? 1 : -1)
             .map((storageAccount: any, key: number) => (
-                <RenderStorageRow storageAccount={storageAccount} key={key}/>
+                <RenderStorageRow storageAccount={storageAccount} key={key} version={version}/>
             ))}
             </>
         );
@@ -1021,6 +1113,7 @@ export function DriveView(props: any){
 
     function RenderStorageRow(props: any){
         const storageAccount = props.storageAccount;
+        const version = props.version;
         const [uploadFiles, setUploadFiles] = React.useState(null);
         //const key = props.key;
         const [open, setOpen] = React.useState(false);
@@ -1063,15 +1156,9 @@ const deserialized = deserializeUnchecked(dataSchema, AccoundData, metavalue?.da
                 storageAccount: storagePublicKey.toString()
             };
 
-            const response = await window.fetch('https://shadow-storage.genesysgo.net/list-objects', {
-                method: "POST",
-                body: JSON.stringify(body),
-                headers: { "Content-Type": "application/json" },
-            });
-          
-            const json = await response.json();
-            console.log("files: "+JSON.stringify(json.keys))
-            setCurrentFiles(json.keys);
+            const response = await thisDrive.listObjects(storagePublicKey)
+
+            setCurrentFiles(response.keys);
         }
 
         const handleClickExpandRow = () => {
@@ -1101,7 +1188,7 @@ const deserialized = deserializeUnchecked(dataSchema, AccoundData, metavalue?.da
                     if (uploadFiles.length <= 1){
                         const path = `https://shdw-drive.genesysgo.net/${storageAccount.publicKey}/${uploadFiles[0].path}`;
                         console.log("Replacing: "+path)
-                        uploadReplaceToStoragePool(uploadFiles[0], path, new PublicKey(storageAccount.publicKey));
+                        uploadReplaceToStoragePool(uploadFiles[0], path, new PublicKey(storageAccount.publicKey), 'v2');
                     }
                 }
             }
@@ -1109,13 +1196,20 @@ const deserialized = deserializeUnchecked(dataSchema, AccoundData, metavalue?.da
 
         const HandleDeleteStoragePool = (event: any) => {
             event.preventDefault();
-            deleteStoragePool(new PublicKey(storageAccount.publicKey));
+            deleteStoragePool(new PublicKey(storageAccount.publicKey), 'v2');
         };
 
         const HandleCancelDeleteStoragePool = (event: any) => {
             event.preventDefault();
-            cancelDeleteStoragePool(new PublicKey(storageAccount.publicKey));
+            cancelDeleteStoragePool(new PublicKey(storageAccount.publicKey), 'v2');
         };
+
+        const HandleMigrateStoragePool = (event: any) => {
+            event.preventDefault();
+            migrateStoragePool(new PublicKey(storageAccount.publicKey));
+        };
+
+        
 
         const HandleClaimStake = (event: any) => {
             event.preventDefault();
@@ -1124,8 +1218,9 @@ const deserialized = deserializeUnchecked(dataSchema, AccoundData, metavalue?.da
 
         const HandleLockStoragePool = (event: any) => {
             event.preventDefault();
-            lockStoragePool(new PublicKey(storageAccount.publicKey));
+            lockStoragePool(new PublicKey(storageAccount.publicKey), 'v2');
         };
+
 
         return (
             <Box sx={{borderBottom:'1px solid #333', borderRadius:'17px'}}>
@@ -1155,7 +1250,11 @@ const deserialized = deserializeUnchecked(dataSchema, AccoundData, metavalue?.da
                         </Typography>
                         
                         <Typography variant="caption">
-                            {`${calculateStorageUsed(storageAccount.account.storageAvailable,storageAccount.account.storage)} - ${moment.unix(+storageAccount.account.creationTime).format("MMMM Do YYYY, h:mm a")}`}
+                            {console.log("storageAccount: "+JSON.stringify(storageAccount))}
+                            <>
+                                {`${calculateStorageUsed(storageAccount.account?.storageAvailable,storageAccount.account.storage)} - ${moment.unix(+storageAccount.account.creationTime).format("MMMM Do YYYY, h:mm a")}`}
+                            </>
+                            
                         </Typography>
                         {open ? <ExpandLess /> : <ExpandMore />}
                     </ListItemText>
@@ -1236,16 +1335,32 @@ const deserialized = deserializeUnchecked(dataSchema, AccoundData, metavalue?.da
                                     </Button>
                                     */}
                                 </ButtonGroup>
-                                
                             </Grid>
+                                {version === 1 &&
+                                    <Grid 
+                                        item xs={12}
+                                    >
+                                        <Button
+                                            variant='outlined'
+                                            onClick={HandleMigrateStoragePool} color="warning" sx={{borderRadius:'17px'}}
+                                        >
+                                            Migrate to v2
+                                        </Button>
+                                    </Grid>
+                                }
+                                
+                            
                             <Paper
                                 sx={{background:'#000'}}
                             >
                                 <Grid container sx={{p:0,m:0}}>
                                     <Grid item xs={12}>   
-                                        <Button sx={{color:'#fff'}} title={`Last Fee Epoch: ${(storageAccount.account.lastFeeEpoch)}`}> 
-                                            {(storageAccount.account.totalCostOfCurrentStorage/LAMPORTS_PER_SOL)}<SolCurrencyIcon sx={{ml:0.5,mr:1,fontSize:"12px"}}  /> Storage Cost
-                                        </Button>
+                                        {storageAccount.account?.totalCostOfCurrentStorage &&
+                                            <Button sx={{color:'#fff'}} title={`Last Fee Epoch: ${(storageAccount.account.lastFeeEpoch)}`}> 
+                                                {(storageAccount.account.totalCostOfCurrentStorage/LAMPORTS_PER_SOL)}<SolCurrencyIcon sx={{ml:0.5,mr:1,fontSize:"12px"}}  /> Storage Cost
+                                            </Button>
+                                        }
+                                        
                                     </Grid>
                                 </Grid>
                             </Paper>
@@ -1259,8 +1374,8 @@ const deserialized = deserializeUnchecked(dataSchema, AccoundData, metavalue?.da
                     </List>
                 </Collapse>
             </Box>
-
-        )
+        )    
+        
     }
 
     return (
@@ -1289,7 +1404,7 @@ const deserialized = deserializeUnchecked(dataSchema, AccoundData, metavalue?.da
                             alignItems="center"
                         >
 
-                            {account && wallet.publicKey ?
+                            {accountV2 && wallet.publicKey ?
                                 <List 
                                     component="nav" 
                                     sx={{ width: '100%' }}
@@ -1312,13 +1427,13 @@ const deserialized = deserializeUnchecked(dataSchema, AccoundData, metavalue?.da
                                                 <Grid item xs={6}>
                                                     Shadow Storage
                                                 </Grid>
-                                                <AddStoragePool account={account} />
+                                                <AddStoragePool account={accountV2} />
                                             </Grid>
                                         </ListSubheader>
                                         
                                         </>
                                     }>
-                                    <RenderStorage account={account} />
+                                    <RenderStorage account={accountV2} vesion={2} />
                                 </List>
                             :
                                 <>
@@ -1335,7 +1450,7 @@ const deserialized = deserializeUnchecked(dataSchema, AccoundData, metavalue?.da
                                                 <Grid item xs={6}>
                                                     Shadow Storage
                                                 </Grid>
-                                                <AddStoragePool account={account} />
+                                                <AddStoragePool account={accountV2} />
                                             </Grid>
                                         </ListSubheader>
                                     :
@@ -1344,6 +1459,19 @@ const deserialized = deserializeUnchecked(dataSchema, AccoundData, metavalue?.da
                                 </>
                             }
                             </>
+                            }
+
+
+                            {accountV1 && wallet.publicKey &&
+                                <List 
+                                    component="nav" 
+                                    sx={{ width: '100%' }}
+                                    subheader={
+                                        <>
+                                        </>
+                                    }>
+                                    <RenderStorage account={accountV1} version={1} />
+                                </List>
                             }
                         </Grid>
                     </Grid>
