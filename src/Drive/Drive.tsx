@@ -1306,28 +1306,31 @@ const deserialized = deserializeUnchecked(dataSchema, AccoundData, metavalue?.da
                                 item xs={12}
                             >   
                                 <ButtonGroup size="small" variant="outlined" aria-label="small outlined button group" sx={{ml:1, color:'white'}}>
-                                    {!storageAccount.account.toBeDeleted &&
-                                        <ResizeStoragePool storageAccount={storageAccount} />
-                                    }
-                                    {console.log(JSON.stringify(storageAccount))}
-                                    {!storageAccount.account.immutable && !storageAccount.account.toBeDeleted ?
-                                        <Button onClick={HandleLockStoragePool} sx={{borderRadius:'17px'}}>
-                                            <LockOpenIcon sx={{mr:1}} /> Lock
-                                        </Button>
-                                    :
-                                        <Button sx={{borderRadius:'17px'}} disabled>
-                                            <LockIcon sx={{mr:1}} /> Locked
-                                        </Button>
-                                    }
-                                    {!storageAccount.account.toBeDeleted ?
-                                        <Button onClick={HandleDeleteStoragePool} color="error" sx={{borderRadius:'17px'}}>
-                                            <DeleteIcon sx={{mr:1}} /> Delete
-                                        </Button>
-                                    :
-                                        <Button onClick={HandleCancelDeleteStoragePool} color="warning" sx={{borderRadius:'17px'}}>
-                                            <RestoreIcon sx={{mr:1}} /> Restore
-                                        </Button>
-                                    }
+                                    {version === 2 && 
+                                    <>
+                                        {!storageAccount.account.toBeDeleted &&
+                                            <ResizeStoragePool storageAccount={storageAccount} />
+                                        }
+                                        {console.log(JSON.stringify(storageAccount))}
+                                        {!storageAccount.account.immutable && !storageAccount.account.toBeDeleted ?
+                                            <Button onClick={HandleLockStoragePool} sx={{borderRadius:'17px'}}>
+                                                <LockOpenIcon sx={{mr:1}} /> Lock
+                                            </Button>
+                                        :
+                                            <Button sx={{borderRadius:'17px'}} disabled>
+                                                <LockIcon sx={{mr:1}} /> Locked
+                                            </Button>
+                                        }
+                                        {!storageAccount.account.toBeDeleted ?
+                                            <Button onClick={HandleDeleteStoragePool} color="error" sx={{borderRadius:'17px'}}>
+                                                <DeleteIcon sx={{mr:1}} /> Delete
+                                            </Button>
+                                        :
+                                            <Button onClick={HandleCancelDeleteStoragePool} color="warning" sx={{borderRadius:'17px'}}>
+                                                <RestoreIcon sx={{mr:1}} /> Restore
+                                            </Button>
+                                        }
+                                    </>}
 
                                     {/*
                                     <Button onClick={HandleClaimStake} color="warning" sx={{borderRadius:'17px'}}>
@@ -1342,6 +1345,7 @@ const deserialized = deserializeUnchecked(dataSchema, AccoundData, metavalue?.da
                                     >
                                         <Button
                                             variant='outlined'
+                                            disabled={true}
                                             onClick={HandleMigrateStoragePool} color="warning" sx={{borderRadius:'17px'}}
                                         >
                                             Migrate to v2
