@@ -1,6 +1,6 @@
 {
     "name": "@grape-labs/grape-drive",
-    "version": "1.1.018",
+    "version": "1.1.019",
     "author": "Grape devDAO",
     "repository": "https://github.com/grape-labs/grape-drive",
     "license": "Apache-2.0",
@@ -67,7 +67,7 @@
         "i18next-http-backend": "^1.4.0",
         "lodash-es": "^4.17.21",
         "loglevel": "^1.8.0",
-        "moment": "^2.29.1",
+        "moment": "^2.29.4",
         "notistack": "^2.0.4",
         "prop-types": "^15.7.2",
         "ramda": "^0.28.0",

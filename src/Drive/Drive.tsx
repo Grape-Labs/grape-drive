@@ -118,15 +118,13 @@ function formatBytes(bytes: any, decimals = 2) {
 
 function calculateStorageUsed(available: any, allocated: any){
     if (available && +available > 0){
-        const percentage = 100-(+available.toNumber()/+allocated.toNumber()*100);
+        const percentage = 100-(+available/allocated.toNumber()*100);
         const storage_string = percentage.toFixed(2) + "% of " + formatBytes(allocated);
         return storage_string;
     } else{
         const storage_string = "0% of " + formatBytes(allocated);
         return storage_string;
-    }
-    
-    
+    }   
 }
 
 export function DriveView(props: any){
@@ -151,6 +149,10 @@ export function DriveView(props: any){
     );
 
     const fetchStorageAccounts = async () => { 
+
+
+
+
         const storedAccount = await thisDrive.getStorageAccounts('v2');
         setAccountV2(storedAccount);
         const storedAccountV1 = await thisDrive.getStorageAccounts('v1');
@@ -631,18 +633,51 @@ export function DriveView(props: any){
                 //console.log("drive: "+JSON.stringify(drive));
                 setThisDrive(drive);
                 //const asa = await drive.getStorageAccounts();
+
                 const asa_v1 = await drive.getStorageAccounts('v1');
                 const asa_v2 = await drive.getStorageAccounts('v2');
-                //console.log("all storage accounts: "+JSON.stringify(asa))
+                
+                //console.log("all storage accounts: "+JSON.stringify(asa_v2))
                 
                 if (asa_v2){
-                    setAccountV2(asa_v2);
+                    var asa_v2_array = new Array();
+                    for (var account of asa_v2){
+                        const body = {
+                            storage_account: account.publicKey
+                        };
+                        console.log("body: "+JSON.stringify(body))
+                        
+                        const response = await window.fetch('https://shadow-storage.genesysgo.net/storage-account-info', {
+                            method: "POST",
+                            body: JSON.stringify(body),
+                            headers: { "Content-Type": "application/json" },
+                        });
+                    
+                        const json = await response.json();
+
+                        var storage = {
+                            publicKey:account.publicKey,
+                            account:account.account,
+                            additional:{
+                                currentUsage:json.current_usage,
+                                version:json.version,
+                            }
+
+                        }
+                        
+                        asa_v2_array.push(storage);
+
+                        console.log("storage: "+JSON.stringify(storage));
+                    }
+                    //setAccountV2(asa_v2);
+                    setAccountV2(asa_v2_array);
                 } else{
                     //createStoragePool('grape-test-storage', '1MB');
                 }
 
-                if (asa_v1)
+                if (asa_v1){
                     setAccountV1(asa_v1);
+                }
 
                 setLoading(false);
 			}
@@ -1250,9 +1285,15 @@ const deserialized = deserializeUnchecked(dataSchema, AccoundData, metavalue?.da
                         </Typography>
                         
                         <Typography variant="caption">
-                            {console.log("storageAccount: "+JSON.stringify(storageAccount))}
+                            {console.log("storageAccount: "+JSON.stringify(storageAccount?.additional))}
                             <>
-                                {`${calculateStorageUsed(storageAccount.account?.storageAvailable,storageAccount.account.storage)} - ${moment.unix(+storageAccount.account.creationTime).format("MMMM Do YYYY, h:mm a")}`}
+                                {storageAccount?.additional ?
+                                    <>{calculateStorageUsed((+storageAccount.account.storage - storageAccount?.additional.currentUsage),storageAccount.account.storage)} - {moment.unix(+storageAccount.account.creationTime).format("MMMM Do YYYY, h:mm a")}</>
+                                :
+                                    <>
+                                    {`${calculateStorageUsed(storageAccount.account?.storageAvailable,storageAccount.account.storage)} - ${moment.unix(+storageAccount.account.creationTime).format("MMMM Do YYYY, h:mm a")}`}
+                                    </>
+                                }
                             </>
                             
                         </Typography>
