@@ -149,12 +149,44 @@ export function DriveView(props: any){
     );
 
     const fetchStorageAccounts = async () => { 
-
-
-
-
         const storedAccount = await thisDrive.getStorageAccounts('v2');
-        setAccountV2(storedAccount);
+        //setAccountV2(storedAccount);
+        if (storedAccount){
+            var asa_v2_array = new Array();
+            for (var account of storedAccount){
+                const body = {
+                    storage_account: account.publicKey
+                };
+                console.log("body: "+JSON.stringify(body))
+                
+                const response = await window.fetch('https://shadow-storage.genesysgo.net/storage-account-info', {
+                    method: "POST",
+                    body: JSON.stringify(body),
+                    headers: { "Content-Type": "application/json" },
+                });
+            
+                const json = await response.json();
+
+                var storage = {
+                    publicKey:account.publicKey,
+                    account:account.account,
+                    additional:{
+                        currentUsage:json.current_usage,
+                        version:json.version,
+                    }
+
+                }
+                
+                asa_v2_array.push(storage);
+
+                console.log("storage: "+JSON.stringify(storage));
+            }
+            //setAccountV2(asa_v2);
+            setAccountV2(asa_v2_array);
+        } else{
+            //createStoragePool('grape-test-storage', '1MB');
+        }
+
         const storedAccountV1 = await thisDrive.getStorageAccounts('v1');
         setAccountV1(storedAccountV1);
     }
