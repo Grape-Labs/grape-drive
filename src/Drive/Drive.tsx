@@ -572,7 +572,7 @@ export function DriveView(props: any){
             const cnfrmkey = enqueueSnackbar(`Confirming transaction`,{ variant: 'info', action:snackprogress, persist: true });
             const signedTransaction = await thisDrive.editFile(new PublicKey(storagePublicKey), existingFileUrl, newFile, version || 'v2');
             //const signedTransaction = await thisDrive.editFile(new PublicKey(storagePublicKey), existingFileUrl, newFile);
-            const latestBlockHash = await connection.getLatestBlockhash();
+            //const latestBlockHash = await connection.getLatestBlockhash();
             
             if (signedTransaction?.finalized_location){
                 closeSnackbar(cnfrmkey);
